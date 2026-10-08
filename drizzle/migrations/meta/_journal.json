@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1790037032452,
+      "tag": "0000_create_admin_analytics",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790039262550,
+      "tag": "0001_create_campaign_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790330854524,
+      "tag": "0002_visitor_presence",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790611858461,
+      "tag": "0003_add_first_seen_to_visitor_presence",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790867323578,
+      "tag": "0004_create_app_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790974017174,
+      "tag": "0005_receipts",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791067148716,
+      "tag": "0006_receipts_admin_delete",
+      "breakpoints": true
+    }
+  ]
+}

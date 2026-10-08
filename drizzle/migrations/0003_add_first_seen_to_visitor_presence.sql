@@ -1,0 +1,1 @@
+ALTER TABLE public.visitor_presence ADD COLUMN IF NOT EXISTS first_seen timestamptz NOT NULL DEFAULT now();

@@ -1,0 +1,23 @@
+-- Cole tudo isso no SQL Editor do Supabase e clique RUN
+create type public.app_role as enum ('admin');
+create table public.user_roles (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id) on delete cascade, role public.app_role not null, created_at timestamptz not null default now(), unique(user_id, role));
+create or replace function public.has_role(_user_id uuid, _role public.app_role) returns boolean language sql stable security definer set search_path=public as $$ select exists(select 1 from public.user_roles where user_id=_user_id and role=_role) $$;
+create or replace function public.grant_first_admin() returns trigger language plpgsql security definer set search_path=public as $$ begin if not exists(select 1 from public.user_roles where role='admin') then insert into public.user_roles(user_id, role) values (new.id,'admin'); end if; return new; end $$;
+create trigger on_auth_user_created after insert on auth.users for each row execute function public.grant_first_admin();
+create table public.sales (id uuid primary key default gen_random_uuid(), txid text not null unique, stage text not null default 'checkout', amount_cents integer not null default 0, status text not null default 'pending', product_name text, utm_source text, utm_campaign text, utm_medium text, utm_content text, utm_term text, customer_name text, customer_email text, customer_phone text, created_at timestamptz not null default now(), paid_at timestamptz, raw jsonb);
+create table public.ad_spend (id uuid primary key default gen_random_uuid(), spend_date date not null, platform text not null default 'facebook', campaign_name text not null, spend_cents integer not null default 0, clicks integer not null default 0, impressions integer not null default 0, source text not null default 'manual', updated_at timestamptz not null default now(), unique(spend_date, platform, campaign_name));
+create table public.app_settings (key text primary key, value text not null, updated_at timestamptz not null default now());
+create table public.campaign_settings (id uuid primary key default gen_random_uuid(), campaign_name text not null unique, is_active boolean not null default true, meta_campaign_id text, last_action text, updated_at timestamptz not null default now());
+create table public.receipts (id uuid primary key default gen_random_uuid(), created_at timestamptz not null default now(), file_path text not null, file_name text, mime text, txid text, amount text, customer_name text, customer_cpf text, customer_phone text);
+create table public.visitor_presence (session_id text primary key, step text not null, utm_campaign text, last_seen timestamptz not null default now(), first_seen timestamptz not null default now());
+alter table public.user_roles enable row level security; alter table public.sales enable row level security; alter table public.ad_spend enable row level security; alter table public.app_settings enable row level security; alter table public.campaign_settings enable row level security; alter table public.receipts enable row level security; alter table public.visitor_presence enable row level security;
+create policy "own roles" on public.user_roles for select to authenticated using (user_id = auth.uid());
+create policy "admin sales" on public.sales for select to authenticated using (public.has_role(auth.uid(),'admin'));
+create policy "admin spend" on public.ad_spend for all to authenticated using (public.has_role(auth.uid(),'admin')) with check (public.has_role(auth.uid(),'admin'));
+create policy "read settings" on public.app_settings for select to anon, authenticated using (true);
+create policy "admin campaigns" on public.campaign_settings for all to authenticated using (public.has_role(auth.uid(),'admin')) with check (public.has_role(auth.uid(),'admin'));
+create policy "admin read receipts" on public.receipts for select to authenticated using (public.has_role(auth.uid(),'admin'));
+create policy "admin del receipts" on public.receipts for delete to authenticated using (public.has_role(auth.uid(),'admin'));
+create policy "admin presence" on public.visitor_presence for select to authenticated using (public.has_role(auth.uid(),'admin'));
+insert into public.app_settings(key, value) values ('pix_gateway','bravopay') on conflict do nothing;
+insert into storage.buckets(id, name, public) values ('comprovantes','comprovantes', false) on conflict do nothing;
