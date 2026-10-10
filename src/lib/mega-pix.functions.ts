@@ -1,8 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { cartTotal, products, type CartItem } from "@/lib/mega-store";
+import { sendUtmifyOrder } from "@/lib/utmify.server";
 
 type Customer = { name: string; email: string; phone: string; cpf: string };
-type Input = { items: CartItem[]; customer: Customer; address: string };
+type Utm = { source?: string; campaign?: string; medium?: string; content?: string; term?: string };
+type Input = { items: CartItem[]; customer: Customer; address: string; utm?: Utm };
 
 function validate(input: Input): Input {
   if (!input || !Array.isArray(input.items) || input.items.length === 0 || input.items.length > 30) throw new Error("Sacola vazia");
@@ -14,7 +16,9 @@ function validate(input: Input): Input {
   const clean = (v: unknown, max: number) => String(v ?? "").trim().slice(0, max);
   const customer = { name: clean(c.name, 100), email: clean(c.email, 120), phone: clean(c.phone, 20).replace(/\D/g, ""), cpf: clean(c.cpf, 18).replace(/\D/g, "") };
   if (customer.name.length < 3 || !/^\S+@\S+\.\S+$/.test(customer.email) || customer.phone.length < 10 || customer.cpf.length !== 11) throw new Error("Dados do cliente inválidos");
-  return { items, customer, address: clean(input.address, 300) };
+  const u = input.utm ?? ({} as Utm);
+  const utm: Utm = { source: clean(u.source, 120), campaign: clean(u.campaign, 120), medium: clean(u.medium, 120), content: clean(u.content, 120), term: clean(u.term, 120) };
+  return { items, customer, address: clean(input.address, 300), utm };
 }
 
 export const createMegaPix = createServerFn({ method: "POST" })
@@ -39,9 +43,16 @@ export const createMegaPix = createServerFn({ method: "POST" })
       await supabaseAdmin.from("sales").upsert({
         txid: j.id, stage: "mega-capacetes", amount_cents: amount, status: "pending",
         product_name: description, customer_name: data.customer.name, customer_email: data.customer.email, customer_phone: data.customer.phone,
-        raw: { items: data.items, address: data.address } as never,
+        raw: { items: data.items, address: data.address, utm: data.utm } as never,
       }, { onConflict: "txid" });
     } catch (e) { console.error("sale log failed", e); }
+    try {
+      await sendUtmifyOrder({
+        orderId: j.id, status: "waiting_payment", valueCents: amount, productName: description,
+        customerName: data.customer.name, customerEmail: data.customer.email, customerPhone: data.customer.phone,
+        utmSource: data.utm?.source, utmCampaign: data.utm?.campaign, utmMedium: data.utm?.medium, utmContent: data.utm?.content, utmTerm: data.utm?.term,
+      });
+    } catch (e) { console.error("utmify send failed", e); }
     return { txid: j.id, copyPaste: j.pix.copy_paste, expiresAt: j.pix.expires_at ?? null, amountCents: amount };
   });
 
@@ -59,7 +70,16 @@ export const checkMegaPix = createServerFn({ method: "GET" })
     if (status === "PAID") {
       try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        await supabaseAdmin.from("sales").update({ status: "paid", paid_at: new Date().toISOString() }).eq("txid", data.txid).neq("status", "paid");
+        const { data: updated } = await supabaseAdmin.from("sales").update({ status: "paid", paid_at: new Date().toISOString() }).eq("txid", data.txid).neq("status", "paid").select("amount_cents, product_name, customer_name, customer_email, customer_phone, raw");
+        const sale = updated?.[0];
+        if (sale) {
+          const utm = ((sale.raw as { utm?: Record<string, string> } | null)?.utm ?? {}) as Record<string, string>;
+          await sendUtmifyOrder({
+            orderId: data.txid, status: "paid", valueCents: Number(sale.amount_cents ?? 0), productName: String(sale.product_name ?? ""),
+            customerName: String(sale.customer_name ?? ""), customerEmail: String(sale.customer_email ?? ""), customerPhone: String(sale.customer_phone ?? ""),
+            utmSource: utm.source, utmCampaign: utm.campaign, utmMedium: utm.medium, utmContent: utm.content, utmTerm: utm.term,
+          });
+        }
       } catch (e) { console.error(e); }
     }
     return { status };
