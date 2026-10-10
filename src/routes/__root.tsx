@@ -105,6 +105,9 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="pt-BR" className="dark">
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: 'window.pixelId="6aca49e3f9026de33c8bece6";' }} />
+        <script src="https://cdn.utmify.com.br/scripts/pixel/pixel.js" async defer />
+        <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck="" data-utmify-prevent-subids="" async defer />
       </head>
       <body>
         {children}
