@@ -16,6 +16,17 @@ function CheckoutPage() { return <StoreLayout><CheckoutDetails /></StoreLayout>;
 const FIELDS = ["name", "email", "phone", "cpf", "cep", "number", "street", "district", "complement", "city", "state"] as const;
 type Form = Record<(typeof FIELDS)[number], string>;
 
+const UTM_KEYS = ["utm_source", "utm_campaign", "utm_medium", "utm_content", "utm_term"] as const;
+function getUtms() {
+  const params = new URLSearchParams(window.location.search);
+  const utm: Record<string, string> = {};
+  for (const k of UTM_KEYS) {
+    const v = params.get(k) || localStorage.getItem(`mega-${k}`) || "";
+    if (v) { localStorage.setItem(`mega-${k}`, v); utm[k.replace("utm_", "")] = v; }
+  }
+  return utm;
+}
+
 function CheckoutDetails() {
   const { items, open } = useStoreCart();
   const navigate = useNavigate();
@@ -38,7 +49,7 @@ function CheckoutDetails() {
     const address = `${form.street}, ${form.number}${form.complement ? ` - ${form.complement}` : ""}${form.district ? `, ${form.district}` : ""} — ${form.city}/${form.state.toUpperCase()} — CEP ${form.cep}`;
     setBusy(true);
     try {
-      const r = await createPix({ data: { items, customer: { name: form.name, email: form.email, phone: form.phone, cpf: form.cpf }, address } });
+      const r = await createPix({ data: { items, customer: { name: form.name, email: form.email, phone: form.phone, cpf: form.cpf }, address, utm: getUtms() } });
       localStorage.setItem("mega-order", JSON.stringify({ txid: r.txid, copyPaste: r.copyPaste, amountCents: r.amountCents, items, customerName: form.name, address, createdAt: Date.now() }));
       await navigate({ to: "/pagamento" });
     } catch (e) {
