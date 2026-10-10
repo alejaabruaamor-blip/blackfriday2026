@@ -21,7 +21,7 @@ function getUtms() {
   const params = new URLSearchParams(window.location.search);
   const utm: Record<string, string> = {};
   for (const k of UTM_KEYS) {
-    const v = params.get(k) || localStorage.getItem(`mega-${k}`) || "";
+    const v = params.get(k) || localStorage.getItem(`mega-${k}`) || localStorage.getItem(k) || "";
     if (v) { localStorage.setItem(`mega-${k}`, v); utm[k.replace("utm_", "")] = v; }
   }
   return utm;
