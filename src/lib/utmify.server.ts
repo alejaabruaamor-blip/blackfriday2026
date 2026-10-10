@@ -32,7 +32,7 @@ export async function sendUtmifyOrder(order: UtmifyOrder): Promise<boolean> {
 
   const payload = {
     orderId: order.orderId,
-    platform: "RecargaJogo",
+    platform: "MegaCapacetes",
     paymentMethod: "pix",
     status: order.status,
     createdAt: fmt(new Date(now.getTime() - 60_000)),
@@ -47,7 +47,7 @@ export async function sendUtmifyOrder(order: UtmifyOrder): Promise<boolean> {
     },
     products: [
       {
-        id: "ebook-design",
+        id: "mega-capacetes",
         name: order.productName ?? "Ebook Design",
         planId: null,
         planName: null,
