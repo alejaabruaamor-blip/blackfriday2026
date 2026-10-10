@@ -190,7 +190,7 @@
 .store-video-section p, .store-feedback-section > p { color: var(--muted-foreground); font-size: 14px; margin-top: 10px; }
 .store-video-slot { width: min(672px, 100%); margin: 20px auto 0; }
 .store-video-slot:empty { display: none; }
-.store-video-slot iframe { display: block; width: 100%; aspect-ratio: 9 / 16; border: none; border-radius: 16px; box-shadow: var(--store-shadow); }
+.store-video-slot iframe, .store-video-slot video { display: block; width: 100%; aspect-ratio: 9 / 16; border: none; border-radius: 16px; box-shadow: var(--store-shadow); background: #000; }
 .store-catalog { padding-block: 56px 8px; }
 .catalog-heading { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 28px; text-align: center; position: relative; }
 .catalog-heading p { font-size: 14px; color: var(--muted-foreground); margin-top: 12px; }
