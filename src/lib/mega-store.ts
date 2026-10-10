@@ -21,7 +21,7 @@ const asset18 = { url: "/img/ff358-speed-race-preto-branco.webp" };
 const asset19 = { url: "/img/ff358-speed-race-italia.webp" };
 const asset20 = { url: "/img/ls2-classic-tank-vermelho.webp" };
 const asset21 = { url: "/img/ls2-gray-tank.webp" };
-const heroAsset = "/img/hero-capacetes-promocional-v4.png";
+const heroAsset = "/img/hero-capacetes-promocional-v4.webp";
 export const hero = heroAsset;
 export const products: Product[] = [
 {"name": "Capacete NoRisk Razor Black Edition", "priceCents": 8906, "pixCents": 8015, "slug": "norisk-razor-black-edition", "brand": "NoRisk", "image": asset0.url},
