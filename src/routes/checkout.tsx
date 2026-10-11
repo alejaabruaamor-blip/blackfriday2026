@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, ShieldCheck, LockKeyhole, Truck, QrCode, CreditCard, Check, Loader2 } from "lucide-react";
 import { StoreLayout, useStoreCart } from "@/components/mega/StoreLayout";
 import { Button } from "@/components/ui/button";
 import { products, cartTotal, money } from "@/lib/mega-store";
 import { createMegaPix } from "@/lib/mega-pix.functions";
+import { ttTrack, ttIdentify } from "@/lib/tiktok";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Pagamento — Mega Capacetes" }, { name: "description", content: "Confira sua sacola e finalize seu pedido na Mega Capacetes." }, { property: "og:title", content: "Pagamento — Mega Capacetes" }, { property: "og:description", content: "Resumo do pedido com desconto de 10% no PIX." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { name: "robots", content: "noindex" }] }),
@@ -36,6 +37,7 @@ function CheckoutDetails() {
   const [error, setError] = useState("");
   const total = cartTotal(items);
   const subtotal = items.reduce((sum, item) => sum + (products.find(p => p.slug === item.slug)?.priceCents ?? 0) * item.quantity, 0);
+  useEffect(() => { if (items.length) ttTrack("InitiateCheckout", total, items.map(i => i.slug).join(","), undefined, items.reduce((n, i) => n + i.quantity, 0)); }, []);
   const field = (k: keyof Form) => ({ value: form[k], onChange: (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, [k]: e.target.value })) });
 
   async function confirm() {
@@ -49,6 +51,8 @@ function CheckoutDetails() {
     const address = `${form.street}, ${form.number}${form.complement ? ` - ${form.complement}` : ""}${form.district ? `, ${form.district}` : ""} — ${form.city}/${form.state.toUpperCase()} — CEP ${form.cep}`;
     setBusy(true);
     try {
+      await ttIdentify(form.email, form.phone);
+      ttTrack("AddPaymentInfo", total, items.map(i => i.slug).join(","));
       const r = await createPix({ data: { items, customer: { name: form.name, email: form.email, phone: form.phone, cpf: form.cpf }, address, utm: getUtms() } });
       localStorage.setItem("mega-order", JSON.stringify({ txid: r.txid, copyPaste: r.copyPaste, amountCents: r.amountCents, items, customerName: form.name, address, createdAt: Date.now() }));
       await navigate({ to: "/pagamento" });
