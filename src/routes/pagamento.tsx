@@ -27,14 +27,14 @@ function PaymentPage() {
   const check = useServerFn(checkMegaPix);
 
   useEffect(() => {
-    try { const o = JSON.parse(localStorage.getItem("mega-order") ?? "null") as MegaOrder | null; if (o?.txid && o.copyPaste) setOrder(o); } catch { /* sem pedido */ }
+    try { const o = JSON.parse(localStorage.getItem("mega-order") ?? "null") as MegaOrder | null; if (o?.txid && o.copyPaste) { setOrder(o); try { const k = "tt-order-" + o.txid; if (!localStorage.getItem(k)) { localStorage.setItem(k, "1"); (window as unknown as { ttq?: { track: (e: string, d: object) => void } }).ttq?.track("PlaceAnOrder", { value: o.amountCents / 100, currency: "BRL", content_type: "product", content_id: "mega-capacetes" }); } } catch { /* sem pixel */ } } } catch { /* sem pedido */ }
     setLoaded(true);
   }, []);
   useEffect(() => { if (order) QRCode.toDataURL(order.copyPaste, { width: 280, margin: 1 }).then(setQr); }, [order]);
   useEffect(() => {
     if (!order) return;
     const tick = setInterval(() => setLeft(Math.max(0, 15 * 60 - Math.floor((Date.now() - order.createdAt) / 1000))), 1000);
-    const poll = setInterval(async () => { try { const r = await check({ data: { txid: order.txid } }); if (r.status === "PAID") { setPaid(true); localStorage.removeItem("mega-cart"); } } catch { /* tenta de novo */ } }, 5000);
+    const poll = setInterval(async () => { try { const r = await check({ data: { txid: order.txid } }); if (r.status === "PAID") { setPaid(true); try { const k = "tt-paid-" + order.txid; if (!localStorage.getItem(k)) { localStorage.setItem(k, "1"); (window as unknown as { ttq?: { track: (e: string, d: object) => void } }).ttq?.track("CompletePayment", { value: order.amountCents / 100, currency: "BRL", content_type: "product", content_id: "mega-capacetes" }); } } catch { /* sem pixel */ } localStorage.removeItem("mega-cart"); } } catch { /* tenta de novo */ } }, 5000);
     return () => { clearInterval(tick); clearInterval(poll); };
   }, [order, check]);
 
