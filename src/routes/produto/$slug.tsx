@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ttTrack } from "@/lib/tiktok";
 import { ShoppingBag, Truck, ShieldCheck, ChevronRight, Home, Plus, Minus, BadgePercent } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StoreLayout, useStoreCart } from "@/components/mega/StoreLayout";
@@ -19,9 +20,11 @@ function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const cart = useStoreCart();
   const sizes = ["56", "57", "58", "59", "60"];
+  useEffect(() => { ttTrack("ViewContent", product.priceCents, product.slug, product.name); }, [product.slug]);
   function addToCart() {
     if (!size) { setError(true); return; }
     cart.add({ slug: product.slug, size, quantity });
+    ttTrack("AddToCart", product.priceCents * quantity, product.slug, product.name, quantity);
   }
   return <div className="product-reference">
     <div className="product-breadcrumb-band"><div className="store-container store-breadcrumb"><Link to="/"><Home size={16} /> Loja</Link><ChevronRight size={12} /><span>{product.name}</span></div></div>
