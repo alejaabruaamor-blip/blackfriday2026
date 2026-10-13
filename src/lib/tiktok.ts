@@ -1,4 +1,4 @@
-// Pixel do TikTok (DB5SHJBC77U8ASU07S90): envia eventos de interesse e compra.
+// Pixel do TikTok (DB7553BC77UA99RA7O60): envia eventos de interesse e compra.
 type Ttq = { track: (e: string, d?: object) => void; identify: (d: object) => void };
 const ttq = () => (typeof window === "undefined" ? undefined : (window as unknown as { ttq?: Ttq }).ttq);
 
