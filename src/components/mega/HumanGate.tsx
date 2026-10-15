@@ -1,6 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 const KEY = "mega-human-ok";
+// Celular: nada passa da largura da tela (o rodapé empurrava a página para o lado)
+const FIX_CSS = "html,body{max-width:100%;overflow-x:hidden}.mega-store{overflow-x:hidden}.footer-links{flex-wrap:wrap;gap:10px 16px;justify-content:center}.footer-links>*{white-space:normal}";
 const DB_URL = "https://tavvstmzvlsepyavfoik.supabase.co";
 const DB_KEY = "sb_publishable_eDX3ju6kRhVod7Erm4OLpA_qkvbbOxD";
 
@@ -34,7 +36,7 @@ export function HumanGate({ children }: { children: ReactNode }) {
   }, []);
 
   if (ok === null) return null;
-  if (ok) return <>{children}</>;
+  if (ok) return <><style>{FIX_CSS}</style>{children}</>;
 
   function entrar() {
     setSaindo(true);
