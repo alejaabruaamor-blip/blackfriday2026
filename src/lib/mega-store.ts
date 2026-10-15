@@ -1,4 +1,7 @@
-export type Product = { name: string; image: string; priceCents: number; pixCents: number; slug: string; brand: string };
+export type ProductKind = "capacete" | "aberto" | "jaqueta" | "acessorio";
+export type Product = { name: string; image: string; priceCents: number; pixCents: number; slug: string; brand: string; kind?: ProductKind; sizes?: string[] };
+export const HELMET_SIZES = ["56", "57", "58", "59", "60"];
+export const isHelmet = (p: Product) => !p.kind || p.kind === "capacete" || p.kind === "aberto";
 const asset0 = { url: "/img/norisk-razor-black-edition.webp" };
 const asset1 = { url: "/img/norisk-darth-preto-fosco.webp" };
 const asset2 = { url: "/img/norisk-ff302-preto-fosco.webp" };
@@ -46,6 +49,28 @@ export const products: Product[] = [
 {"name": "Capacete LS2 FF358 Speed Race Itália", "priceCents": 10930, "pixCents": 9837, "slug": "ls2-ff358-speed-race-italia", "brand": "LS2", "image": asset19.url},
 {"name": "Capacete LS2 Classic Tank Vermelho", "priceCents": 10346, "pixCents": 9311, "slug": "ls2-classic-tank-vermelho", "brand": "LS2", "image": asset20.url},
 {"name": "Capacete LS2 Gray Tank", "priceCents": 11066, "pixCents": 9959, "slug": "ls2-gray-tank", "brand": "LS2", "image": asset21.url},
+{"name": "Jaqueta NoRisk Trip Air Feminina Rosa", "priceCents": 6868, "pixCents": 6181, "slug": "norisk-trip-air-feminina-rosa", "brand": "NoRisk", "kind": "jaqueta", "sizes": ["PP", "P", "M", "G", "GG"], "image": "/img/norisk-trip-air-feminina-rosa.webp"},
+{"name": "Jaqueta NoRisk Tornado Feminina Branco", "priceCents": 6868, "pixCents": 6181, "slug": "norisk-tornado-feminina-branco", "brand": "NoRisk", "kind": "jaqueta", "sizes": ["PP", "P", "M", "G", "GG"], "image": "/img/norisk-tornado-feminina-branco.webp"},
+{"name": "Jaqueta NoRisk Tornado Preto", "priceCents": 6868, "pixCents": 6181, "slug": "norisk-tornado-preto", "brand": "NoRisk", "kind": "jaqueta", "sizes": ["PP", "P", "M", "G", "GG"], "image": "/img/norisk-tornado-preto.webp"},
+{"name": "Jaqueta NoRisk Tornado Cinza", "priceCents": 6868, "pixCents": 6181, "slug": "norisk-tornado-cinza", "brand": "NoRisk", "kind": "jaqueta", "sizes": ["PP", "P", "M", "G", "GG"], "image": "/img/norisk-tornado-cinza.webp"},
+{"name": "Jaqueta Alpinestars Alux WP 100% Impermeável", "priceCents": 4982, "pixCents": 4484, "slug": "alpinestars-alux-wp", "brand": "Alpinestars", "kind": "jaqueta", "sizes": ["PP", "P", "M", "G", "GG"], "image": "/img/alpinestars-alux-wp.webp"},
+{"name": "Jaqueta Alpinestars T-SPS V2 WP Preto", "priceCents": 12152, "pixCents": 10937, "slug": "alpinestars-t-sps-v2-wp-preto", "brand": "Alpinestars", "kind": "jaqueta", "sizes": ["PP", "P", "M", "G", "GG"], "image": "/img/alpinestars-t-sps-v2-wp-preto.webp"},
+{"name": "Jaqueta Alpinestars T-SPS WP Preto", "priceCents": 10197, "pixCents": 9177, "slug": "alpinestars-t-sps-wp-preto", "brand": "Alpinestars", "kind": "jaqueta", "sizes": ["PP", "P", "M", "G", "GG"], "image": "/img/alpinestars-t-sps-wp-preto.webp"},
+{"name": "Jaqueta LS2 Throttle Black", "priceCents": 10399, "pixCents": 9359, "slug": "ls2-throttle-black", "brand": "LS2", "kind": "jaqueta", "sizes": ["PP", "P", "M", "G", "GG"], "image": "/img/ls2-throttle-black.webp"},
+{"name": "Luva Alpinestars Reef V2", "priceCents": 4982, "pixCents": 4484, "slug": "luva-alpinestars-reef-v2", "brand": "Alpinestars", "kind": "acessorio", "sizes": ["P", "M", "G", "GG"], "image": "/img/luva-alpinestars-reef-v2.webp"},
+{"name": "Fone Bluetooth para Capacete Kateluo RGB", "priceCents": 2290, "pixCents": 2061, "slug": "fone-bluetooth-capacete-kateluo", "brand": "Kateluo", "kind": "acessorio", "sizes": ["Único"], "image": "/img/fone-bluetooth-capacete-kateluo.webp"},
+{"name": "Viseira NoRisk FF302 Fotocromática Transition", "priceCents": 6413, "pixCents": 5772, "slug": "viseira-norisk-ff302-fotocromatica", "brand": "NoRisk", "kind": "acessorio", "sizes": ["Único"], "image": "/img/viseira-norisk-ff302-fotocromatica.webp"},
+{"name": "Viseira NoRisk Flow Fumê", "priceCents": 2796, "pixCents": 2516, "slug": "viseira-norisk-flow-fume", "brand": "NoRisk", "kind": "acessorio", "sizes": ["Único"], "image": "/img/viseira-norisk-flow-fume.webp"},
+{"name": "Narigueira Alta Universal para Capacete LS2 e NoRisk", "priceCents": 1860, "pixCents": 1674, "slug": "narigueira-alta-universal", "brand": "NoRisk", "kind": "acessorio", "sizes": ["Único"], "image": "/img/narigueira-alta-universal.webp"},
+{"name": "Capacete Aberto NoRisk Orion SV Free Branco/Laranja", "priceCents": 6868, "pixCents": 6181, "slug": "norisk-orion-sv-free-branco-laranja", "brand": "NoRisk", "kind": "aberto", "sizes": ["54", "56", "58", "60", "62"], "image": "/img/norisk-orion-sv-free-branco-laranja.webp"},
+{"name": "Capacete Aberto NoRisk City Branco", "priceCents": 6868, "pixCents": 6181, "slug": "norisk-city-branco", "brand": "NoRisk", "kind": "aberto", "sizes": ["54", "56", "58", "60", "62"], "image": "/img/norisk-city-branco.webp"},
+{"name": "Capacete Aberto NoRisk City Cinza Fosco", "priceCents": 6868, "pixCents": 6181, "slug": "norisk-city-cinza-fosco", "brand": "NoRisk", "kind": "aberto", "sizes": ["54", "56", "58", "60", "62"], "image": "/img/norisk-city-cinza-fosco.webp"},
+{"name": "Capacete Aberto NoRisk City Preto Fosco", "priceCents": 6868, "pixCents": 6181, "slug": "norisk-city-preto-fosco", "brand": "NoRisk", "kind": "aberto", "sizes": ["54", "56", "58", "60", "62"], "image": "/img/norisk-city-preto-fosco.webp"},
+{"name": "Capacete Aberto NoRisk Rock Nardo Cinza", "priceCents": 6868, "pixCents": 6181, "slug": "norisk-rock-nardo-cinza", "brand": "NoRisk", "kind": "aberto", "sizes": ["54", "56", "58", "60", "62"], "image": "/img/norisk-rock-nardo-cinza.webp"},
+{"name": "Capacete Aberto LS2 OF616 Airflow II Draze", "priceCents": 6868, "pixCents": 6181, "slug": "ls2-of616-airflow-ii-draze", "brand": "LS2", "kind": "aberto", "sizes": ["54", "56", "58", "60", "62"], "image": "/img/ls2-of616-airflow-ii-draze.webp"},
+{"name": "Capacete Aberto AGV Blade Tab Italy Branco", "priceCents": 7090, "pixCents": 6381, "slug": "agv-blade-tab-italy-branco", "brand": "AGV", "kind": "aberto", "sizes": ["54", "56", "58", "60", "62"], "image": "/img/agv-blade-tab-italy-branco.webp"},
+{"name": "Capacete Aberto AGV Blade Valentino Heart", "priceCents": 7160, "pixCents": 6444, "slug": "agv-blade-valentino-heart", "brand": "AGV", "kind": "aberto", "sizes": ["54", "56", "58", "60", "62"], "image": "/img/agv-blade-valentino-heart.webp"},
+{"name": "Capacete Aberto AGV Blade Zoo", "priceCents": 6868, "pixCents": 6181, "slug": "agv-blade-zoo", "brand": "AGV", "kind": "aberto", "sizes": ["54", "56", "58", "60", "62"], "image": "/img/agv-blade-zoo.webp"},
 ];
 export const money = (cents: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
 export type CartItem = { slug: string; size: string; quantity: number };

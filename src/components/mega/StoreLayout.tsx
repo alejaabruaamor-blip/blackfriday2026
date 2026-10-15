@@ -34,6 +34,9 @@ export function StoreLayout({ children }: { children: ReactNode }) {
             <Link to="/" onClick={() => setMenuOpen(false)}>Loja</Link>
             <Link to="/colecao/$brand" params={{ brand: "norisk" }} onClick={() => setMenuOpen(false)}>NoRisk</Link>
             <Link to="/colecao/$brand" params={{ brand: "ls2" }} onClick={() => setMenuOpen(false)}>LS2</Link>
+            <Link to="/colecao/$brand" params={{ brand: "abertos" }} onClick={() => setMenuOpen(false)}>Abertos</Link>
+            <Link to="/colecao/$brand" params={{ brand: "jaquetas" }} onClick={() => setMenuOpen(false)}>Jaquetas</Link>
+            <Link to="/colecao/$brand" params={{ brand: "acessorios" }} onClick={() => setMenuOpen(false)}>Acessórios</Link>
             <Link to="/produto/$slug" params={{ slug: products[0]?.slug ?? "norisk-razor-black-edition" }} onClick={() => setMenuOpen(false)}>Mais Vendido</Link>
           </nav>
           <div className="store-header-actions"><Button variant="ghost" size="icon" aria-label={`Abrir sacola, ${items.reduce((n, i) => n + i.quantity, 0)} itens`} onClick={() => setCartOpen(true)}><ShoppingCart />{items.length > 0 && <span className="cart-count">{items.reduce((n, i) => n + i.quantity, 0)}</span>}</Button><Button variant="ghost" size="icon" className="store-menu" aria-label="Abrir menu" onClick={() => setMenuOpen(v => !v)}>{menuOpen ? <X /> : <Menu />}</Button></div>

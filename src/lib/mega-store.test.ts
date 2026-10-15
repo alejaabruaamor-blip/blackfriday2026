@@ -37,6 +37,8 @@ const discountOf = (slug: string, priceCents: number) => {
   return priceCents / (base * 0.9);
 };
 
+const helmets = products.filter(p => !p.kind);
+
 describe("Mega Capacetes prices", () => {
   test("reference starting offer is R$ 89.06 (50% off the R$ 178.12 base)", () => {
     assert.equal(products.find(p => p.slug === "norisk-razor-black-edition")?.priceCents, 8906);
@@ -46,12 +48,12 @@ describe("Mega Capacetes prices", () => {
     for (const product of products) assert.equal(product.pixCents, Math.round(product.priceCents * 0.9));
   });
   test("only 3 models carry the 70% offer", () => {
-    assert.equal(products.length, 22);
-    const deep = products.filter(p => Math.abs(discountOf(p.slug, p.priceCents) - 0.3) < 0.005).map(p => p.slug).sort();
+    assert.equal(helmets.length, 22);
+    const deep = helmets.filter(p => Math.abs(discountOf(p.slug, p.priceCents) - 0.3) < 0.005).map(p => p.slug).sort();
     assert.deepEqual(deep, [...SEVENTY].sort());
   });
   test("the other 19 models stay at the 50% offer", () => {
-    const shallow = products.filter(p => !SEVENTY.includes(p.slug));
+    const shallow = helmets.filter(p => !SEVENTY.includes(p.slug));
     assert.equal(shallow.length, 19);
     for (const product of shallow) assert.ok(Math.abs(discountOf(product.slug, product.priceCents) - 0.5) < 0.005, `${product.slug} is not 50% off`);
   });
@@ -59,6 +61,13 @@ describe("Mega Capacetes prices", () => {
     assert.equal(products.find(p => p.slug === "norisk-speed-max-rosa-roxo")?.priceCents, 6478);
     assert.equal(products.find(p => p.slug === "norisk-speed-max-branco-tiffany")?.priceCents, 6370);
     assert.equal(products.find(p => p.slug === "norisk-speed-max-vermelho-cinza")?.priceCents, 6694);
+  });
+  test("new collections: 8 jackets, 5 accessories, 9 open helmets", () => {
+    assert.equal(products.filter(p => p.kind === "jaqueta").length, 8);
+    assert.equal(products.filter(p => p.kind === "acessorio").length, 5);
+    assert.equal(products.filter(p => p.kind === "aberto").length, 9);
+    assert.equal(products.find(p => p.slug === "norisk-tornado-preto")?.priceCents, 6868);
+    assert.equal(products.find(p => p.slug === "narigueira-alta-universal")?.pixCents, 1674);
   });
   test("cart total uses the actual discounted price and quantity", () => {
     assert.equal(cartTotal([{ slug: "norisk-razor-black-edition", size: "58", quantity: 2 }]), 16030);
