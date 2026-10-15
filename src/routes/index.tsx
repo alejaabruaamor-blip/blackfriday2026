@@ -10,9 +10,9 @@ import { CustomerReviews } from "@/components/mega/CustomerReviews";
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
     { title: "Mega Capacetes — Ofertas NoRisk e LS2" },
-    { name: "description", content: "Confira os capacetes NoRisk e LS2 da Mega Capacetes. Queima de estoque a partir de R$ 63,70, frete grátis e 10% de desconto no PIX." },
+    { name: "description", content: "Confira os capacetes NoRisk e LS2 da Mega Capacetes. Queima de estoque a partir de R$ 35,62, frete grátis e 10% de desconto no PIX." },
     { property: "og:title", content: "Mega Capacetes — Ofertas NoRisk e LS2" },
-    { property: "og:description", content: "Capacetes NoRisk e LS2 a partir de R$ 63,70. Frete grátis e 10% OFF no PIX." },
+    { property: "og:description", content: "Capacetes NoRisk e LS2 a partir de R$ 35,62. Frete grátis e 10% OFF no PIX." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ] }),
   component: Home,
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
 function Home() {
   const featuredSlug = products[0]?.slug ?? "norisk-razor-black-edition";
   return <StoreLayout>
-    <section className="store-hero store-container"><Link to="/produto/$slug" params={{ slug: featuredSlug }}><img src={hero} alt="Mega Capacetes — Queima de estoque! Capacetes originais NoRisk e LS2 a partir de R$ 63,70. Frete grátis e 10% OFF no PIX." fetchPriority="high" /></Link></section>
+    <section className="store-hero store-container"><Link to="/produto/$slug" params={{ slug: featuredSlug }}><img src={hero} alt="Mega Capacetes — Queima de estoque! Capacetes originais NoRisk e LS2 a partir de R$ 35,62. Frete grátis e 10% OFF no PIX." fetchPriority="high" /></Link></section>
     <section className="store-video-section"><div className="store-container"><span className="section-eyebrow">▶ ASSISTA ANTES DE COMPRAR</span><h1>Por que o preço está tão baixo?</h1><p>Entenda como conseguimos oferecer o menor preço do mercado</p><div className="store-video-slot"><StoreVideo /></div></div></section>
     {["NoRisk", "LS2"].map(brand => <section className="store-catalog store-container" key={brand}><div className="catalog-heading"><div><span className="section-eyebrow">COLEÇÃO {brand.toUpperCase()}</span><h2>Os {brand} Mais Vendidos</h2></div><span className="catalog-promo">{brand === "NoRisk" ? "🔥 Oferta Relâmpago" : "Seleção LS2"}</span></div><div className="helmet-grid">{products.filter(p => p.brand === brand && !p.kind).map((product, i) => <ProductCard key={product.slug} product={product} featured={i === 0} />)}</div><Button variant="outline" asChild className="collection-link"><Link to="/colecao/$brand" params={{ brand: brand.toLowerCase() }}>VER TODOS OS CAPACETES {brand.toUpperCase()} <ArrowRight /></Link></Button></section>)}
     {([["abertos", "aberto", "Capacetes Abertos", "CAPACETES ABERTOS"], ["jaquetas", "jaqueta", "Jaquetas", "JAQUETAS"], ["acessorios", "acessorio", "Acessórios", "ACESSÓRIOS"]] as const).map(([key, kind, title, cta]) => <section className="store-catalog store-container" key={key}><div className="catalog-heading"><div><span className="section-eyebrow">NOVIDADE</span><h2>{title}</h2></div><span className="catalog-promo">Frete grátis</span></div><div className="helmet-grid">{products.filter(p => p.kind === kind).slice(0, 8).map(product => <ProductCard key={product.slug} product={product} />)}</div><Button variant="outline" asChild className="collection-link"><Link to="/colecao/$brand" params={{ brand: key }}>VER TODOS: {cta} <ArrowRight /></Link></Button></section>)}
