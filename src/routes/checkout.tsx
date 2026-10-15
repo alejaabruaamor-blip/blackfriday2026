@@ -38,23 +38,32 @@ function CheckoutDetails() {
   const total = cartTotal(items);
   const subtotal = items.reduce((sum, item) => sum + (products.find(p => p.slug === item.slug)?.priceCents ?? 0) * item.quantity, 0);
   useEffect(() => { if (items.length) ttTrack("InitiateCheckout", total, items.map(i => i.slug).join(","), undefined, items.reduce((n, i) => n + i.quantity, 0)); }, []);
-  const field = (k: keyof Form) => ({ value: form[k], onChange: (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, [k]: e.target.value })) });
+  const field = (k: keyof Form) => ({ name: k, "data-field": k, value: form[k], onInput: (e: React.FormEvent<HTMLInputElement>) => { const v = e.currentTarget.value; setForm(f => ({ ...f, [k]: v })); }, onBlur: (e: React.FocusEvent<HTMLInputElement>) => { const v = e.currentTarget.value; setForm(f => (f[k] === v ? f : { ...f, [k]: v })); }, onChange: (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, [k]: e.target.value })) });
 
   async function confirm() {
     setError("");
+    // Lê o que está escrito na tela (inclui preenchimento automático do celular)
+    const live = { ...form } as Form;
+    for (const k of FIELDS) { const el = document.querySelector<HTMLInputElement>(`[data-field="${k}"]`); if (el) live[k] = el.value.trim(); }
+    setForm(live);
+    const form2 = live;
     const digits = (v: string) => v.replace(/\D/g, "");
-    if (form.name.trim().length < 3) return setError("Informe seu nome completo.");
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) return setError("Informe um e-mail válido.");
-    if (digits(form.phone).length < 10) return setError("Informe um telefone com DDD.");
-    if (digits(form.cpf).length !== 11) return setError("Informe um CPF válido.");
-    if (digits(form.cep).length !== 8 || !form.number || !form.street || !form.city || !form.state) return setError("Preencha o endereço de entrega.");
-    const address = `${form.street}, ${form.number}${form.complement ? ` - ${form.complement}` : ""}${form.district ? `, ${form.district}` : ""} — ${form.city}/${form.state.toUpperCase()} — CEP ${form.cep}`;
+    if (form2.name.trim().length < 3) return setError("Informe seu nome completo.");
+    if (!/^\S+@\S+\.\S+$/.test(form2.email.replace(/\s/g, ""))) return setError("Informe um e-mail válido.");
+    if (digits(form2.phone).length < 10) return setError("Informe um telefone com DDD.");
+    if (digits(form2.cpf).length !== 11) return setError("Informe um CPF válido.");
+    if (digits(form2.cep).length !== 8) return setError("Informe um CEP válido (8 números).");
+    if (!form2.number) return setError("Informe o número da casa.");
+    if (!form2.street) return setError("Informe a rua.");
+    if (!form2.city) return setError("Informe a cidade.");
+    if (form2.state.replace(/[^a-zA-Z]/g, "").length < 2) return setError("Informe o estado (UF), ex: SP.");
+    const address = `${form2.street}, ${form2.number}${form2.complement ? ` - ${form2.complement}` : ""}${form2.district ? `, ${form2.district}` : ""} — ${form2.city}/${form2.state.toUpperCase()} — CEP ${form2.cep}`;
     setBusy(true);
     try {
-      await ttIdentify(form.email, form.phone);
+      await ttIdentify(form2.email, form2.phone);
       ttTrack("AddPaymentInfo", total, items.map(i => i.slug).join(","));
-      const r = await createPix({ data: { items, customer: { name: form.name, email: form.email, phone: form.phone, cpf: form.cpf }, address, utm: getUtms() } });
-      localStorage.setItem("mega-order", JSON.stringify({ txid: r.txid, copyPaste: r.copyPaste, amountCents: r.amountCents, items, customerName: form.name, address, createdAt: Date.now() }));
+      const r = await createPix({ data: { items, customer: { name: form2.name, email: form2.email.replace(/\s/g, ""), phone: form2.phone, cpf: form2.cpf }, address, utm: getUtms() } });
+      localStorage.setItem("mega-order", JSON.stringify({ txid: r.txid, copyPaste: r.copyPaste, amountCents: r.amountCents, items, customerName: form2.name, address, createdAt: Date.now() }));
       await navigate({ to: "/pagamento" });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Não foi possível gerar o PIX.");
