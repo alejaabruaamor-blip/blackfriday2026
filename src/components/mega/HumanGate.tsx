@@ -60,7 +60,7 @@ export function HumanGate({ children }: { children: ReactNode }) {
             🔥 PROMOÇÃO ATIVA HOJE
           </span>
           <h1 style={{ fontSize: 28, fontWeight: 900, margin: "16px 0 8px", maxWidth: 420, lineHeight: 1.15 }}>
-            Capacetes NoRisk e LS2 com até <span style={{ color: "#f5c518" }}>70% OFF</span>
+            Capacetes NoRisk e LS2 com até <span style={{ color: "#f5c518" }}>80% OFF</span>
           </h1>
           <p style={{ fontSize: 15, color: "#b9b9c4", maxWidth: 360, margin: "0 0 26px", lineHeight: 1.5 }}>
             Frete grátis para todo o Brasil e +10% de desconto no PIX.
