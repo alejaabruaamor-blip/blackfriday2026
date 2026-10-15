@@ -1,0 +1,17 @@
+(function () {
+if(location.pathname.startsWith('/dashboard')||location.pathname==='/auth')return;
+const ID='1078452948251354',KEY='mega-ad-choice',VERSION='mega-ads-2026-10-15';
+const notice='Usamos dados de navegação, páginas e produtos vistos, cookies publicitários e ações de compra com valores para medição e otimização de anúncios na Meta. Não enviamos nome, e-mail, telefone ou CPF ao Meta. Você pode recusar ou retirar a autorização em Configurações de cookies.';
+let region=null,ready=false,started=false;
+const regulated=new Set('AT BE BG HR CY CZ DK EE FI FR DE GR HU IS IE IT LI LV LT LU MT NL NO PL PT RO SK SI ES SE GB CH'.split(' '));
+function choice(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch{return null}}
+function permitted(){const c=choice();if(c?.advertising===false)return false;return ready&&(c?.advertising===true||(region&&!regulated.has(region)))}
+function cleanUrl(){const u=new URL(location.href);['email','name','phone','whatsapp','cpf','document'].forEach(k=>u.searchParams.delete(k));if(u.href!==location.href)history.replaceState(history.state,'',u)}
+function init(){if(started)return;cleanUrl();const fbq=window.fbq||function(){if(fbq.callMethod)fbq.callMethod.apply(fbq,arguments);else fbq.queue.push(Array.from(arguments))};window.fbq=fbq;window._fbq=window._fbq||fbq;fbq.push=fbq;fbq.loaded=true;fbq.version='2.0';fbq.queue=fbq.queue||[];fbq('set','autoConfig',false,ID);fbq('init',ID);fbq('consent','grant');const s=document.createElement('script');s.async=true;s.src='https://connect.facebook.net/en_US/fbevents.js';document.head.appendChild(s);started=true;track('PageView')}
+function sync(){if(permitted()){if(!started)init();else window.fbq('consent','grant')}else if(started)window.fbq('consent','revoke');window.dispatchEvent(new Event('mega-ad-change'))}
+function track(name,data,eventId){if(!permitted()||!started){if(name==='Purchase'&&eventId){try{localStorage.setItem('meta-blocked-'+eventId,'1')}catch{}return true}return false}if(eventId&&localStorage.getItem('meta-blocked-'+eventId))return true;cleanUrl();window.fbq('trackSingle',ID,name,data||{},eventId?{eventID:eventId}:undefined);return true}
+window.megaMeta={track,permitted,state:()=>({ready,region,needsChoice:ready&&(!region||regulated.has(region))&&choice()?.advertising==null,choice:choice(),notice}),choose:function(advertising){try{let visitor=localStorage.getItem('mega-ad-visitor');if(!visitor){visitor=crypto.randomUUID();localStorage.setItem('mega-ad-visitor',visitor)}const record={visitor,advertising,region,at:new Date().toISOString(),version:VERSION,notice,recipients:['Meta'],purposes:['measurement','ad optimization']};const history=JSON.parse(localStorage.getItem('mega-ad-evidence')||'[]');history.push(record);localStorage.setItem('mega-ad-evidence',JSON.stringify(history));localStorage.setItem(KEY,JSON.stringify(record))}catch{return false}sync();return true}};
+window.addEventListener('storage',e=>{if(e.key===KEY)sync()});window.addEventListener('mega-meta-event',e=>{const d=e.detail;track(d.name,d.data,d.eventId)});
+(async()=>{try{const response=await fetch('/cdn-cgi/trace',{signal:AbortSignal.timeout(2000),cache:'no-store'});if(response.ok){const text=await response.text();const loc=/^loc=([A-Z]{2})$/m.exec(text)?.[1];if(loc&&loc!=='XX'&&loc!=='T1')region=loc}}catch{}finally{ready=true;sync()}})();
+let previous=location.pathname;setInterval(()=>{if(location.pathname!==previous){previous=location.pathname;if(!previous.startsWith('/dashboard')&&previous!=='/auth')track('PageView')}},500);
+})();

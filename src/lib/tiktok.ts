@@ -8,6 +8,8 @@ async function sha256(v: string) {
 }
 
 export function ttTrack(event: string, valueCents: number, id: string, name?: string, quantity = 1) {
+  const names: Record<string,string> = {ViewContent:'ViewContent',AddToCart:'AddToCart',InitiateCheckout:'InitiateCheckout',AddPaymentInfo:'AddPaymentInfo'};
+  if (typeof window !== 'undefined' && names[event]) window.dispatchEvent(new CustomEvent('mega-meta-event', {detail:{name:names[event],data:{value:valueCents/100,currency:'BRL',content_type:'product',content_ids:[id],num_items:quantity}}}));
   try {
     ttq()?.track(event, { value: valueCents / 100, currency: "BRL", content_type: "product", content_id: id, contents: [{ content_id: id, content_name: name, quantity, price: valueCents / 100 / quantity }] });
   } catch { /* sem pixel */ }
