@@ -47,7 +47,8 @@ export function HumanVerification({ returnTo }: { returnTo: string }) {
 
   function entrar(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!checked) {
+    const marcado = checked || Boolean((document.getElementById("mg-human") as HTMLInputElement | null)?.checked);
+    if (!marcado) {
       setError("Marque a caixinha para confirmar que você é humano.");
       return;
     }
@@ -75,7 +76,7 @@ export function HumanVerification({ returnTo }: { returnTo: string }) {
       <h1>Verificação de segurança</h1>
       <p>Confirme que você é humano para continuar.</p>
       <form onSubmit={entrar} className="mg-form">
-        <label className="mg-check" htmlFor="mg-human">
+        <label className="mg-check">
           <input id="mg-human" type="checkbox" checked={checked} onChange={event => { setChecked(event.target.checked); setError(""); }} aria-describedby={error ? "mg-error" : undefined} aria-invalid={Boolean(error)} />
           <span>Não sou um robô</span>
         </label>
