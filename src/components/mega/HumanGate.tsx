@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode, type FormEvent } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { validHumanAnswer } from "@/lib/human-challenge";
+import { validHumanAnswer, safeStoreReturn } from "@/lib/human-challenge";
 
 const KEY = "mega-human-verified-v2";
 const FIX_CSS = "html,body{max-width:100%;overflow-x:hidden}.mega-store{overflow-x:hidden}.footer-links{flex-wrap:wrap;gap:10px 16px;justify-content:center}.footer-links>*{white-space:normal}";
@@ -30,16 +31,23 @@ function trackVisit() {
 function newQuestion() { return [Math.floor(Math.random() * 8) + 1, Math.floor(Math.random() * 8) + 1]; }
 
 export function HumanGate({ children }: { children: ReactNode }) {
-  const [ok, setOk] = useState<boolean | null>(null);
+  const [ok, setOk] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    trackVisit();
+    let verified = false;
+    try { verified = sessionStorage.getItem(KEY) === "1"; } catch { /* verificação necessária */ }
+    if (verified) { setOk(true); return; }
+    void navigate({ to: "/verificacao", search: { returnTo: window.location.pathname + window.location.search + window.location.hash }, replace: true });
+  }, [navigate]);
+  return ok ? <><style>{FIX_CSS}</style>{children}</> : null;
+}
+
+export function HumanVerification({ returnTo }: { returnTo: string }) {
   const [question, setQuestion] = useState([5, 2]);
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    trackVisit();
-    setQuestion(newQuestion());
-    try { setOk(sessionStorage.getItem(KEY) === "1"); } catch { setOk(false); }
-  }, []);
+  useEffect(() => { setQuestion(newQuestion()); }, []);
 
   function entrar(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,15 +58,12 @@ export function HumanGate({ children }: { children: ReactNode }) {
       return;
     }
     try { sessionStorage.setItem(KEY, "1"); } catch { /* segue sem salvar */ }
-    setOk(true);
+    window.location.replace(safeStoreReturn(returnTo));
   }
-
-  if (ok === null) return null;
-  if (ok) return <><style>{FIX_CSS}</style>{children}</>;
 
   return <>
     <style>{`${FIX_CSS}
-      .mg-gate{--mg-bg:#0b0b0f;--mg-fg:#fff;--mg-muted:#b9b9c4;--mg-accent:#f5c518;--mg-border:#44444d;--mg-surface:#23232c;--mg-error:#ff8c94;position:fixed;inset:0;z-index:9999;background:var(--mg-bg);color:var(--mg-fg);display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;text-align:center;font-family:Inter,system-ui,sans-serif}
+      .mg-gate{--mg-bg:#0b0b0f;--mg-fg:#fff;--mg-muted:#b9b9c4;--mg-accent:#f5c518;--mg-border:#44444d;--mg-surface:#23232c;--mg-error:#ff8c94;min-height:100dvh;background:var(--mg-bg);color:var(--mg-fg);display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;text-align:center;font-family:Inter,system-ui,sans-serif}
       .mg-content{width:100%;max-width:420px;margin:auto;display:flex;flex-direction:column;align-items:center}
       .mg-logo{width:84px;height:84px;border-radius:8px;margin-bottom:18px}
       .mg-shield{width:32px;height:32px;color:var(--mg-accent)}
@@ -70,7 +75,6 @@ export function HumanGate({ children }: { children: ReactNode }) {
       .mg-enter{width:100%;height:52px;background:var(--mg-accent);color:var(--mg-bg);font-size:16px;font-weight:800;border-radius:8px}
       .mg-enter:hover{background:var(--mg-accent);color:var(--mg-bg);filter:brightness(.94)}
       .mg-gate .mg-error{color:var(--mg-error);font-size:14px;margin-bottom:12px}
-      .mg-gate .mg-offer{margin-top:20px;font-size:13px}
     `}</style>
     <div className="mg-gate"><div className="mg-content">
       <img src="/img/mega-capacetes-logo.webp" alt="Mega Capacetes" className="mg-logo" />
@@ -83,7 +87,6 @@ export function HumanGate({ children }: { children: ReactNode }) {
         {error && <p id="mg-error" role="alert" className="mg-error">{error}</p>}
         <Button type="submit" className="mg-enter">VER AS OFERTAS →</Button>
       </form>
-      <p className="mg-offer">Capacetes NoRisk e LS2 com até 80% OFF.<br />Frete grátis e +10% de desconto no PIX.</p>
     </div></div>
   </>;
 }
