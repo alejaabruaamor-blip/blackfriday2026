@@ -63,29 +63,27 @@ export function HumanVerification({ returnTo }: { returnTo: string }) {
 
   return <>
     <style>{`${FIX_CSS}
-      .mg-gate{--mg-bg:#0b0b0f;--mg-fg:#fff;--mg-muted:#b9b9c4;--mg-accent:#f5c518;--mg-border:#44444d;--mg-surface:#23232c;--mg-error:#ff8c94;min-height:100dvh;background:var(--mg-bg);color:var(--mg-fg);display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;text-align:center;font-family:Inter,system-ui,sans-serif}
-      .mg-content{width:100%;max-width:420px;margin:auto;display:flex;flex-direction:column;align-items:center}
-      .mg-logo{width:84px;height:84px;border-radius:8px;margin-bottom:18px}
+      .mg-gate{--mg-bg:#f5f5f5;--mg-fg:#1a1a1a;--mg-muted:#666;--mg-accent:#2563eb;--mg-border:#d4d4d4;--mg-surface:#fff;--mg-error:#dc2626;min-height:100dvh;background:var(--mg-bg);color:var(--mg-fg);display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;text-align:center;font-family:system-ui,sans-serif}
+      .mg-content{width:100%;max-width:360px;margin:auto;display:flex;flex-direction:column;align-items:center;background:var(--mg-surface);border:1px solid var(--mg-border);border-radius:12px;padding:32px 24px}
       .mg-shield{width:32px;height:32px;color:var(--mg-accent)}
-      .mg-gate h1{font-size:28px;font-weight:900;margin:16px 0 8px;line-height:1.2}
-      .mg-gate p{font-size:15px;color:var(--mg-muted);line-height:1.5;margin:0 0 20px}
-      .mg-form{width:100%;max-width:340px}
-      .mg-label{display:block;font-size:22px;font-weight:700;margin-bottom:12px}
-      .mg-input{width:100%;height:52px;border:1px solid var(--mg-border);border-radius:8px;background:var(--mg-surface);color:var(--mg-fg);text-align:center;font-size:22px;outline-offset:4px;margin-bottom:12px}
-      .mg-enter{width:100%;height:52px;background:var(--mg-accent);color:var(--mg-bg);font-size:16px;font-weight:800;border-radius:8px}
-      .mg-enter:hover{background:var(--mg-accent);color:var(--mg-bg);filter:brightness(.94)}
-      .mg-gate .mg-error{color:var(--mg-error);font-size:14px;margin-bottom:12px}
+      .mg-gate h1{font-size:20px;font-weight:700;margin:14px 0 6px;line-height:1.2}
+      .mg-gate p{font-size:14px;color:var(--mg-muted);line-height:1.5;margin:0 0 18px}
+      .mg-form{width:100%}
+      .mg-label{display:block;font-size:20px;font-weight:700;margin-bottom:12px}
+      .mg-input{width:100%;height:48px;border:1px solid var(--mg-border);border-radius:8px;background:var(--mg-surface);color:var(--mg-fg);text-align:center;font-size:20px;outline-offset:4px;margin-bottom:12px}
+      .mg-enter{width:100%;height:48px;background:var(--mg-accent);color:#fff;font-size:15px;font-weight:700;border-radius:8px}
+      .mg-enter:hover{background:var(--mg-accent);color:#fff;filter:brightness(.94)}
+      .mg-gate .mg-error{color:var(--mg-error);font-size:13px;margin-bottom:12px}
     `}</style>
     <div className="mg-gate"><div className="mg-content">
-      <img src="/img/mega-capacetes-logo.webp" alt="Mega Capacetes" className="mg-logo" />
       <ShieldCheck className="mg-shield" aria-hidden="true" />
       <h1>Verificação de segurança</h1>
-      <p>Confirme que você é humano para entrar na Mega Capacetes.</p>
+      <p>Confirme que você é humano para continuar.</p>
       <form onSubmit={entrar} className="mg-form">
         <label htmlFor="mg-answer" className="mg-label">Quanto é {question[0]} + {question[1]}?</label>
         <input id="mg-answer" className="mg-input" value={answer} onChange={event => setAnswer(event.target.value)} inputMode="numeric" autoComplete="off" maxLength={2} required aria-describedby={error ? "mg-error" : undefined} aria-invalid={Boolean(error)} />
         {error && <p id="mg-error" role="alert" className="mg-error">{error}</p>}
-        <Button type="submit" className="mg-enter">VER AS OFERTAS →</Button>
+        <Button type="submit" className="mg-enter">Confirmar</Button>
       </form>
     </div></div>
   </>;
