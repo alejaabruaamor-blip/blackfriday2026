@@ -93,8 +93,12 @@ export const trackingSteps = [
   { day: 10, title: "Entregue", text: "Previsão de entrega concluída." },
 ] as const;
 
-/** Etapas já alcançadas, contando os dias desde a aprovação do pagamento. */
+/** Etapas já alcançadas, contando os dias do calendário (virou o dia, conta) desde a aprovação do pagamento. */
 export function reachedSteps(paidAtMs: number, nowMs: number): number {
-  const days = Math.floor((nowMs - paidAtMs) / 86_400_000);
+  const start = new Date(paidAtMs);
+  start.setHours(0, 0, 0, 0);
+  const now = new Date(nowMs);
+  now.setHours(0, 0, 0, 0);
+  const days = Math.round((now.getTime() - start.getTime()) / 86_400_000);
   return trackingSteps.filter((s) => days >= s.day).length;
 }
