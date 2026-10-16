@@ -37,25 +37,25 @@ const discountOf = (slug: string, priceCents: number) => {
 const helmets = products.filter(p => !p.kind);
 
 describe("Mega Capacetes prices", () => {
-  test("reference starting offer is R$ 35,62 (80% off)", () => {
-    assert.equal(products.find(p => p.slug === "norisk-razor-black-edition")?.priceCents, 3562);
+  test("reference starting offer is R$ 44,53 (75% off)", () => {
+    assert.equal(products.find(p => p.slug === "norisk-razor-black-edition")?.priceCents, 4453);
   });
   test("PIX has a 10 percent discount", () => {
     for (const product of products) assert.equal(product.pixCents, Math.round(product.priceCents * 0.9));
   });
-  test("every helmet is 80% off", () => {
+  test("every helmet is 75% off", () => {
     assert.equal(helmets.length, 22);
-    for (const p of helmets) assert.ok(Math.abs(discountOf(p.slug, p.priceCents) - 0.2) < 0.005, `${p.slug} is not 80% off`);
+    for (const p of helmets) assert.ok(Math.abs(discountOf(p.slug, p.priceCents) - 0.25) < 0.005, `${p.slug} is not 75% off`);
   });
   test("new collections: 8 jackets, 5 accessories, 9 open helmets", () => {
     assert.equal(products.filter(p => p.kind === "jaqueta").length, 8);
     assert.equal(products.filter(p => p.kind === "acessorio").length, 5);
     assert.equal(products.filter(p => p.kind === "aberto").length, 9);
-    assert.equal(products.find(p => p.slug === "norisk-tornado-preto")?.priceCents, 2747);
-    assert.equal(products.find(p => p.slug === "narigueira-alta-universal")?.pixCents, 670);
+    assert.equal(products.find(p => p.slug === "norisk-tornado-preto")?.priceCents, 3434);
+    assert.equal(products.find(p => p.slug === "narigueira-alta-universal")?.pixCents, 419);
   });
   test("cart total uses the actual discounted price and quantity", () => {
-    assert.equal(cartTotal([{ slug: "norisk-razor-black-edition", size: "58", quantity: 2 }]), 6412);
+    assert.equal(cartTotal([{ slug: "norisk-razor-black-edition", size: "58", quantity: 2 }]), 8016);
   });
   test("same product and size merge without mixing different sizes", () => {
     const original = [{ slug: "norisk-razor-black-edition", size: "58", quantity: 1 }];
