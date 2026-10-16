@@ -51,8 +51,8 @@ describe("Mega Capacetes prices", () => {
     assert.equal(products.filter(p => p.kind === "jaqueta").length, 8);
     assert.equal(products.filter(p => p.kind === "acessorio").length, 5);
     assert.equal(products.filter(p => p.kind === "aberto").length, 9);
-    assert.equal(products.find(p => p.slug === "norisk-tornado-preto")?.priceCents, 3434);
-    assert.equal(products.find(p => p.slug === "narigueira-alta-universal")?.pixCents, 419);
+    assert.equal(products.find(p => p.slug === "norisk-tornado-preto")?.priceCents, 2747);
+    assert.equal(products.find(p => p.slug === "narigueira-alta-universal")?.pixCents, 1674);
   });
   test("cart total uses the actual discounted price and quantity", () => {
     assert.equal(cartTotal([{ slug: "norisk-razor-black-edition", size: "58", quantity: 2 }]), 8016);
