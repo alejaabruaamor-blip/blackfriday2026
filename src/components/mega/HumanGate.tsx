@@ -1,7 +1,9 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode, type FormEvent } from "react";
+import { ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { validHumanAnswer } from "@/lib/human-challenge";
 
-const KEY = "mega-human-ok";
-// Celular: nada passa da largura da tela (o rodapé empurrava a página para o lado)
+const KEY = "mega-human-verified-v2";
 const FIX_CSS = "html,body{max-width:100%;overflow-x:hidden}.mega-store{overflow-x:hidden}.footer-links{flex-wrap:wrap;gap:10px 16px;justify-content:center}.footer-links>*{white-space:normal}";
 const DB_URL = "https://tavvstmzvlsepyavfoik.supabase.co";
 const DB_KEY = "sb_publishable_eDX3ju6kRhVod7Erm4OLpA_qkvbbOxD";
@@ -10,7 +12,6 @@ declare global {
   interface Window { ttq?: { track: (event: string, data?: Record<string, unknown>) => void } }
 }
 
-// Contador de visitas do painel: anota em qual etapa cada visitante está.
 function trackVisit() {
   try {
     let sid = localStorage.getItem("mega-sid");
@@ -26,60 +27,63 @@ function trackVisit() {
   } catch { /* contador é opcional */ }
 }
 
+function newQuestion() { return [Math.floor(Math.random() * 8) + 1, Math.floor(Math.random() * 8) + 1]; }
+
 export function HumanGate({ children }: { children: ReactNode }) {
   const [ok, setOk] = useState<boolean | null>(null);
-  const [saindo, setSaindo] = useState(false);
+  const [question, setQuestion] = useState([5, 2]);
+  const [answer, setAnswer] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     trackVisit();
-    try { setOk(localStorage.getItem(KEY) === "1"); } catch { setOk(true); }
+    setQuestion(newQuestion());
+    try { setOk(sessionStorage.getItem(KEY) === "1"); } catch { setOk(false); }
   }, []);
+
+  function entrar(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!validHumanAnswer(answer, question[0], question[1])) {
+      setError("Resposta incorreta. Tente a nova conta.");
+      setAnswer("");
+      setQuestion(newQuestion());
+      return;
+    }
+    try { sessionStorage.setItem(KEY, "1"); } catch { /* segue sem salvar */ }
+    setOk(true);
+  }
 
   if (ok === null) return null;
   if (ok) return <><style>{FIX_CSS}</style>{children}</>;
 
-  function entrar() {
-    setSaindo(true);
-    try { localStorage.setItem(KEY, "1"); } catch { /* segue */ }
-    setTimeout(() => setOk(true), 250);
-  }
-
-  return (
-    <>
-      <style>{`@keyframes mgPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes mgIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}`}</style>
-      <div style={{
-        position: "fixed", inset: 0, zIndex: 9999,
-        background: "radial-gradient(circle at 50% 20%, #23232c 0%, #0b0b0f 70%)", color: "#fff",
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        padding: 24, textAlign: "center", fontFamily: "Inter, system-ui, sans-serif",
-        opacity: saindo ? 0 : 1, transition: "opacity .25s",
-      }}>
-        <div style={{ animation: "mgIn .4s ease-out", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <img src="/img/mega-capacetes-logo.webp" alt="Mega Capacetes" style={{ width: 84, height: 84, borderRadius: 18, marginBottom: 18 }} />
-          <span style={{ background: "#e11d2a", color: "#fff", fontSize: 12, fontWeight: 800, padding: "6px 12px", borderRadius: 999, letterSpacing: 1 }}>
-            🔥 PROMOÇÃO ATIVA HOJE
-          </span>
-          <h1 style={{ fontSize: 28, fontWeight: 900, margin: "16px 0 8px", maxWidth: 420, lineHeight: 1.15 }}>
-            Capacetes NoRisk e LS2 com até <span style={{ color: "#f5c518" }}>80% OFF</span>
-          </h1>
-          <p style={{ fontSize: 15, color: "#b9b9c4", maxWidth: 360, margin: "0 0 26px", lineHeight: 1.5 }}>
-            Frete grátis para todo o Brasil e +10% de desconto no PIX.
-          </p>
-          <button
-            onClick={entrar}
-            style={{
-              background: "#f5c518", color: "#0b0b0f", border: "none", cursor: "pointer",
-              fontSize: 18, fontWeight: 900, padding: "18px 36px", borderRadius: 14, width: "100%", maxWidth: 340,
-              boxShadow: "0 10px 28px rgba(245,197,24,.4)", animation: "mgPulse 1.6s ease-in-out infinite",
-            }}
-          >
-            VER AS OFERTAS →
-          </button>
-          <p style={{ fontSize: 12, color: "#8a8a96", marginTop: 18 }}>
-            🔒 Compra 100% segura · Frete grátis · PIX com desconto
-          </p>
-        </div>
-      </div>
-    </>
-  );
+  return <>
+    <style>{`${FIX_CSS}
+      .mg-gate{--mg-bg:#0b0b0f;--mg-fg:#fff;--mg-muted:#b9b9c4;--mg-accent:#f5c518;--mg-border:#44444d;--mg-surface:#23232c;--mg-error:#ff8c94;position:fixed;inset:0;z-index:9999;background:var(--mg-bg);color:var(--mg-fg);display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;text-align:center;font-family:Inter,system-ui,sans-serif}
+      .mg-content{width:100%;max-width:420px;margin:auto;display:flex;flex-direction:column;align-items:center}
+      .mg-logo{width:84px;height:84px;border-radius:8px;margin-bottom:18px}
+      .mg-shield{width:32px;height:32px;color:var(--mg-accent)}
+      .mg-gate h1{font-size:28px;font-weight:900;margin:16px 0 8px;line-height:1.2}
+      .mg-gate p{font-size:15px;color:var(--mg-muted);line-height:1.5;margin:0 0 20px}
+      .mg-form{width:100%;max-width:340px}
+      .mg-label{display:block;font-size:22px;font-weight:700;margin-bottom:12px}
+      .mg-input{width:100%;height:52px;border:1px solid var(--mg-border);border-radius:8px;background:var(--mg-surface);color:var(--mg-fg);text-align:center;font-size:22px;outline-offset:4px;margin-bottom:12px}
+      .mg-enter{width:100%;height:52px;background:var(--mg-accent);color:var(--mg-bg);font-size:16px;font-weight:800;border-radius:8px}
+      .mg-enter:hover{background:var(--mg-accent);color:var(--mg-bg);filter:brightness(.94)}
+      .mg-gate .mg-error{color:var(--mg-error);font-size:14px;margin-bottom:12px}
+      .mg-gate .mg-offer{margin-top:20px;font-size:13px}
+    `}</style>
+    <div className="mg-gate"><div className="mg-content">
+      <img src="/img/mega-capacetes-logo.webp" alt="Mega Capacetes" className="mg-logo" />
+      <ShieldCheck className="mg-shield" aria-hidden="true" />
+      <h1>Verificação de segurança</h1>
+      <p>Confirme que você é humano para entrar na Mega Capacetes.</p>
+      <form onSubmit={entrar} className="mg-form">
+        <label htmlFor="mg-answer" className="mg-label">Quanto é {question[0]} + {question[1]}?</label>
+        <input id="mg-answer" className="mg-input" value={answer} onChange={event => setAnswer(event.target.value)} inputMode="numeric" autoComplete="off" maxLength={2} required aria-describedby={error ? "mg-error" : undefined} aria-invalid={Boolean(error)} />
+        {error && <p id="mg-error" role="alert" className="mg-error">{error}</p>}
+        <Button type="submit" className="mg-enter">VER AS OFERTAS →</Button>
+      </form>
+      <p className="mg-offer">Capacetes NoRisk e LS2 com até 80% OFF.<br />Frete grátis e +10% de desconto no PIX.</p>
+    </div></div>
+  </>;
 }
