@@ -90,7 +90,7 @@ export const trackingSteps = [
   { day: 3, title: "Coleta", text: "Pedido coletado pela transportadora." },
   { day: 4, title: "Em trânsito", text: "Seu pedido está a caminho." },
   { day: 8, title: "Saiu para entrega", text: "Seu pedido saiu para entrega." },
-  { day: 10, title: "Entregue", text: "Previsão de entrega concluída." },
+  { day: 14, title: "Entregue", text: "Previsão de entrega concluída." },
 ] as const;
 
 /** Etapas já alcançadas, contando os dias do calendário (virou o dia, conta) desde a aprovação do pagamento. */
