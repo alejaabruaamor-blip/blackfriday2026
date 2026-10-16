@@ -37,15 +37,15 @@ const discountOf = (slug: string, priceCents: number) => {
 const helmets = products.filter(p => !p.kind);
 
 describe("Mega Capacetes prices", () => {
-  test("reference starting offer is R$ 44,53 (75% off)", () => {
-    assert.equal(products.find(p => p.slug === "norisk-razor-black-edition")?.priceCents, 4453);
+  test("reference starting offer is R$ 57,00 (68% off)", () => {
+    assert.equal(products.find(p => p.slug === "norisk-razor-black-edition")?.priceCents, 5700);
   });
   test("PIX has a 10 percent discount", () => {
     for (const product of products) assert.equal(product.pixCents, Math.round(product.priceCents * 0.9));
   });
-  test("every helmet is 75% off", () => {
+  test("every helmet is 68% off", () => {
     assert.equal(helmets.length, 22);
-    for (const p of helmets) assert.ok(Math.abs(discountOf(p.slug, p.priceCents) - 0.25) < 0.005, `${p.slug} is not 75% off`);
+    for (const p of helmets) assert.ok(Math.abs(discountOf(p.slug, p.priceCents) - 0.32) < 0.005, `${p.slug} is not 68% off`);
   });
   test("new collections: 8 jackets, 5 accessories, 9 open helmets", () => {
     assert.equal(products.filter(p => p.kind === "jaqueta").length, 8);
@@ -55,7 +55,7 @@ describe("Mega Capacetes prices", () => {
     assert.equal(products.find(p => p.slug === "narigueira-alta-universal")?.pixCents, 1674);
   });
   test("cart total uses the actual discounted price and quantity", () => {
-    assert.equal(cartTotal([{ slug: "norisk-razor-black-edition", size: "58", quantity: 2 }]), 8016);
+    assert.equal(cartTotal([{ slug: "norisk-razor-black-edition", size: "58", quantity: 2 }]), 10260);
   });
   test("same product and size merge without mixing different sizes", () => {
     const original = [{ slug: "norisk-razor-black-edition", size: "58", quantity: 1 }];
