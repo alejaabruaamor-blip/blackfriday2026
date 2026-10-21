@@ -8,9 +8,10 @@ import { CustomerReviews } from "@/components/mega/CustomerReviews";
 import { FeedbackVideos } from "@/components/mega/ReferenceContent";
 import { Button } from "@/components/ui/button";
 import { products, money, trackingCode, type CartItem } from "@/lib/mega-store";
-import { checkMegaPix } from "@/lib/mega-pix.functions";
+import { checkMegaPix, restoreMegaPix } from "@/lib/mega-pix.functions";
 
 export const Route = createFileRoute("/pagamento")({
+  validateSearch: (s: Record<string, unknown>) => ({tx: typeof s.tx === "string" ? s.tx : "", rec: typeof s.rec === "string" ? s.rec : ""}),
   head: () => ({ meta: [{ title: "Pague com PIX — Mega Capacetes" }, { name: "description", content: "Escaneie o QR Code PIX para concluir seu pedido na Mega Capacetes." }, { property: "og:title", content: "Pague com PIX — Mega Capacetes" }, { property: "og:description", content: "QR Code PIX, resumo do pedido e 14 dias de garantia." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: () => <StoreLayout><PaymentPage /></StoreLayout>,
 });
@@ -25,8 +26,18 @@ function PaymentPage() {
   const [paid, setPaid] = useState(false);
   const [left, setLeft] = useState(15 * 60);
   const check = useServerFn(checkMegaPix);
+  const restore = useServerFn(restoreMegaPix);
+  const search = Route.useSearch();
+  const [restoreError, setRestoreError] = useState("");
 
   useEffect(() => {
+    if (search.tx && search.rec) {
+      restore({data:{txid:search.tx, token:search.rec}}).then(o => {
+        setOrder(o); setPaid(o.status === "PAID");
+        localStorage.setItem("mega-order", JSON.stringify(o));
+      }).catch(e => setRestoreError(e instanceof Error ? e.message : "Não foi possível abrir o pedido")).finally(() => setLoaded(true));
+      return;
+    }
     try { const o = JSON.parse(localStorage.getItem("mega-order") ?? "null") as MegaOrder | null; if (o?.txid && o.copyPaste) { setOrder(o); try { const k = "tt-order-" + o.txid; if (!localStorage.getItem(k)) { localStorage.setItem(k, "1"); (window as unknown as { ttq?: { track: (e: string, d: object) => void } }).ttq?.track("PlaceAnOrder", { value: o.amountCents / 100, currency: "BRL", content_type: "product", content_id: "mega-capacetes" }); } } catch { /* sem pixel */ } } } catch { /* sem pedido */ }
     setLoaded(true);
   }, []);
@@ -39,7 +50,7 @@ function PaymentPage() {
   }, [order, check]);
 
   if (!loaded) return <section className="store-container checkout-page" />;
-  if (!order) return <section className="store-container checkout-page"><h1>Nenhum pedido encontrado</h1><Button asChild><Link to="/">Voltar para a loja</Link></Button></section>;
+  if (!order) return <section className="store-container checkout-page"><h1>{restoreError || "Nenhum pedido encontrado"}</h1><Button asChild><Link to="/">Voltar para a loja</Link></Button></section>;
 
   const mm = String(Math.floor(left / 60)).padStart(2, "0"), ss = String(left % 60).padStart(2, "0");
   return <div className="mega-checkout">
