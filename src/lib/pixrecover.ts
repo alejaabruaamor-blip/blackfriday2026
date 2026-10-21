@@ -12,6 +12,6 @@ export function recoveryPayload(input: RecoveryInput, recoveryToken: string) {
     payment_expires_at: input.expiresAt,
     checkout_url: `${STORE_ORIGIN}/pagamento?tx=${encodeURIComponent(input.txid)}&rec=${encodeURIComponent(recoveryToken)}`,
     communication_consent: input.communicationConsent,
-    legal_basis: input.communicationConsent ? 'Consentimento explícito para lembretes de Pix no checkout — v1' : null,
+    legal_basis: input.communicationConsent ? 'Consentimento explícito para lembretes de Pix no checkout — v1' : 'legitimate_interest_order_reminder_v1',
   };
 }

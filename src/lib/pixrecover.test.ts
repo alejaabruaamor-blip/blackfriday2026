@@ -10,8 +10,10 @@ test('pedido Black Friday envia nome, produto, foto, valor e identidade corretos
  assert.equal(p.product_image_url, 'https://lojapromocao2026.vercel.app/img/norisk-razor-black-edition.webp');
  assert.equal(new URL(p.checkout_url).searchParams.get('tx'), 'tx-test-123');
 });
-test('sem consentimento não envia pedido à recuperação', async () => {
- assert.deepEqual(await sendRecoveryOrder({...input, communicationConsent: false}, 'test-only-secret'), {ok:true, skipped:true});
+test('lembrete sem caixinha registra base sem inventar consentimento', () => {
+ const p = recoveryPayload({...input, communicationConsent:false}, 'signed-token');
+ assert.equal(p.communication_consent, false);
+ assert.equal(p.legal_basis, 'legitimate_interest_order_reminder_v1');
 });
 test('link assinado só reabre a transação correta', async () => {
  const token = await recoveryToken('tx-test-123', 'test-only-secret');
@@ -24,8 +26,9 @@ test('envia o pedido apenas para a recuperação com a chave no servidor', async
  globalThis.fetch = async (url, init) => {
   assert.equal(url, 'https://screenshot-inspired-screen-maker.lovable.app/api/public/orders/pix');
   assert.equal(new Headers(init?.headers).get('Authorization'), 'Bearer test-only-secret');
-  assert.equal(JSON.parse(String(init?.body)).communication_consent, true);
+  assert.equal(JSON.parse(String(init?.body)).communication_consent, false);
+  assert.equal(JSON.parse(String(init?.body)).legal_basis, 'legitimate_interest_order_reminder_v1');
   return new Response('{}', {status:201});
  };
- try { assert.deepEqual(await sendRecoveryOrder(input, 'test-only-secret'), {ok:true, skipped:false}); } finally { globalThis.fetch = original; }
+ try { assert.deepEqual(await sendRecoveryOrder({...input, communicationConsent:false}, 'test-only-secret'), {ok:true, skipped:false}); } finally { globalThis.fetch = original; }
 });

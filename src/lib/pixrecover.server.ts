@@ -13,7 +13,6 @@ export async function validRecoveryToken(txid: string, token: string, secret: st
   return mismatch === 0;
 }
 export async function sendRecoveryOrder(input: RecoveryInput, apiKey: string) {
-  if (!input.communicationConsent) return { ok: true, skipped: true };
   const token = await recoveryToken(input.txid, apiKey);
   const response = await fetch('https://screenshot-inspired-screen-maker.lovable.app/api/public/orders/pix', {
     method: 'POST', headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },

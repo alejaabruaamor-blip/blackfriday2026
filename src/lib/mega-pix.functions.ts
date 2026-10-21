@@ -43,7 +43,7 @@ export const createMegaPix = createServerFn({ method: "POST" })
       await supabaseAdmin.from("sales").upsert({
         txid: j.id, stage: "mega-capacetes", amount_cents: amount, status: "pending",
         product_name: description, customer_name: data.customer.name, customer_email: data.customer.email, customer_phone: data.customer.phone,
-        raw: { items: data.items, address: data.address, utm: data.utm, communicationConsent: data.communicationConsent, consentVersion: "pix-reminder-v1", consentAt: new Date().toISOString() } as never,
+        raw: { items: data.items, address: data.address, utm: data.utm, communicationConsent: data.communicationConsent, reminderBasis: data.communicationConsent ? "consent" : "legitimate_interest_order_reminder_v1", reminderNoticeVersion: "order-reminder-v1", reminderNoticeAt: new Date().toISOString() } as never,
       }, { onConflict: "txid" });
     } catch (e) { console.error("sale log failed", e); }
     try {
@@ -55,10 +55,10 @@ export const createMegaPix = createServerFn({ method: "POST" })
     } catch (e) { console.error("utmify send failed", e); }
     try {
       const recoveryKey = process.env["PIXRECOVER_API_KEY"];
-      if (recoveryKey && data.communicationConsent) {
+      if (recoveryKey) {
         const { sendRecoveryOrder } = await import("./pixrecover.server");
-        await sendRecoveryOrder({ txid: j.id, items: data.items, customer: data.customer, communicationConsent: data.communicationConsent, expiresAt: j.pix.expires_at ?? null }, recoveryKey);
-      } else if (data.communicationConsent) console.error("PixRecover não configurado: falta PIXRECOVER_API_KEY");
+        await sendRecoveryOrder({ txid: j.id, items: data.items, customer: data.customer, communicationConsent: data.communicationConsent === true, expiresAt: j.pix.expires_at ?? null }, recoveryKey);
+      } else console.error("PixRecover não configurado: falta PIXRECOVER_API_KEY");
     } catch { console.error("Falha na recuperação; Pix permanece disponível"); }
     return { txid: j.id, copyPaste: j.pix.copy_paste, expiresAt: j.pix.expires_at ?? null, amountCents: amount };
   });
