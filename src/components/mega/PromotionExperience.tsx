@@ -47,7 +47,7 @@ export function PromotionExperience({ returnTo }: { returnTo: string }) {
     setCompleted(outcome.attempt); setResult(outcome.discount === 75 ? 'win' : 'retry'); setBusy(false); lock.current = false;
   }
   return <div className="mega-store promotion-page"><style>{FIT_CSS}</style>
-    <header className="promotion-header"><img src="/img/mega-capacetes-logo.webp" alt="Mega Capacetes" width="48" height="48" /><div><strong>MEGA CAPACETES</strong><span>BLACK FRIDAY 2026</span></div><ShieldCheck aria-label="Promoção da loja" /></header>
+    <header className="promotion-header"><img src="/img/mega-logo-96.webp" alt="Mega Capacetes" width="48" height="48" fetchPriority="high" decoding="async" loading="eager" /><div><strong>MEGA CAPACETES</strong><span>BLACK FRIDAY 2026</span></div><ShieldCheck aria-label="Promoção da loja" /></header>
     {view === 'intro' ? <main className="promotion-intro">
       <div className="promotion-trophy"><Trophy size={52} /></div><h1>Parabéns!</h1><span className="promotion-approved"><Check size={20} /> Acesso à promoção liberado</span>
       <p>Você está na <strong>Black Friday da Mega Capacetes!</strong> Sua próxima aventura começa com o capacete certo.</p>
