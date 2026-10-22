@@ -11,7 +11,7 @@
  */
 
 async function sha256Hex(value: string): Promise<string> {
-  const bytes = new TextEncoder().encode(value);
+  const bytes = new TextEncode().encode(value);
   const digest = await crypto.subtle.digest('SHA-256', bytes);
   return Array.from(new Uint8Array(digest))
     .map((b) => b.toString(16).padStart(2, '0'))
@@ -40,7 +40,7 @@ export async function sendMetaEvent(event: MetaEvent): Promise<void> {
         event_time: Math.floor((event.eventTimeMs ?? Date.now()) / 1000),
         event_id: `${event.eventName}:${event.txid}`,
         action_source: 'website',
-        event_source_url: 'https://recargajogoquiz.vercel.app/',
+        event_source_url: 'https://lojapromocao2026.vercel.app/',
         user_data: { external_id: [externalId] },
         custom_data: {
           currency: 'BRL',
