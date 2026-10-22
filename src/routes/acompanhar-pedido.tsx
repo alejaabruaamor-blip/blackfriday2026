@@ -39,8 +39,8 @@ function TrackingPage() {
         <Button variant="ghost" size="sm" onClick={() => void copy()}><Copy /> {copied ? "Copiado!" : "Copiar"}</Button>
       </section>
       <ol className="tracking-steps">{trackingSteps.map((s, i) => { const done = i < reached; const date = new Date(found.paidAt + s.day * 86_400_000).toLocaleDateString("pt-BR"); return <li key={s.title} className={done ? "done" : "next"}>{done ? <CheckCircle2 size={20} /> : <Circle size={20} />}<div><strong>{s.title}</strong> · {done ? date : `previsto ${date}`}<p>{s.text}</p></div></li>; })}</ol>
-      <PostSaleProducts />
     </>}
     <p className="tracking-help"><Mail size={14} /> Precisa de ajuda? Fale com a gente: <a href={`mailto:${MEGA_STORE_EMAIL}`}>{MEGA_STORE_EMAIL}</a> — <Link to="/politica-de-trocas">trocas e devoluções</Link></p>
+    <PostSaleProducts />
   </section></StoreLayout>;
 }
