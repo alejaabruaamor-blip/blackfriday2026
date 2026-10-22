@@ -1,5 +1,26 @@
+import { useRef, useState } from "react";
+
 export function StoreVideo() {
-  return <video src="/videos/vsl.mp4" controls playsInline preload="metadata" title="Mega Capacetes \u2014 Assista antes de comprar" />;
+  const ref = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const start = () => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = false;
+    setPlaying(true);
+    void v.play().catch(() => setPlaying(false));
+  };
+  return (
+    <div className="vsl-wrap">
+      <video ref={ref} src="/videos/vsl.mp4" poster="/img/vsl-capa.webp" controls={playing} playsInline preload="none" onPlay={() => setPlaying(true)} title="Mega Capacetes — Assista antes de comprar" />
+      {!playing && (
+        <button type="button" className="vsl-play" onClick={start} aria-label="Assistir ao vídeo">
+          <span className="vsl-play-icon" aria-hidden="true" />
+          <span>ASSISTIR AGORA</span>
+        </button>
+      )}
+    </div>
+  );
 }
 
 const feedbacks = [
