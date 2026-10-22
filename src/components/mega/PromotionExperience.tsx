@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Trophy, Check, Gift, RotateCw, ArrowRight, ShieldCheck, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { safeStoreReturn } from '@/lib/human-challenge';
 import { MAX_SPINS, PROMOTION_KEY, SPIN_KEY, STORE_ACCESS_KEY, WHEEL_LABELS, spinOutcome } from '@/lib/promotion';
 import promoImage from '@/assets/promocao-roleta.jpg.asset.json';
 import { createRouletteAudio } from '@/lib/roulette-audio';
@@ -26,7 +25,7 @@ export function PromotionExperience({ returnTo }: { returnTo: string }) {
   }, []);
   function enterStore() {
     try { sessionStorage.setItem(STORE_ACCESS_KEY, '1'); sessionStorage.setItem(PROMOTION_KEY, '75'); } catch { /* continue */ }
-    window.location.replace(safeStoreReturn(returnTo));
+    window.location.replace('/');
   }
   async function spin() {
     if (lock.current) return;
