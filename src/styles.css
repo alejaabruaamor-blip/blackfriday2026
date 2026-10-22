@@ -159,7 +159,7 @@
   --store-overlay: oklch(0.1 0 0 / 45%);
   --store-button-gradient: linear-gradient(110deg, oklch(0.36 0.15 265), var(--primary));
   --store-star: oklch(0.77 0.17 80); --store-shadow: 0 3px 14px oklch(0.2 0 0 / 8%);
-  background: var(--background); color: var(--foreground); min-height: 100vh; padding-top: 38px;
+  background: var(--background); color: var(--foreground); min-height: 100vh;
   font-family: "Inter", Arial, Helvetica, sans-serif; letter-spacing: 0;
 }
 .mega-store *, .mega-store *::before, .mega-store *::after { box-sizing: border-box; }
