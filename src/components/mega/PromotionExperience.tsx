@@ -6,6 +6,8 @@ import promoImage from '@/assets/promocao-roleta.jpg.asset.json';
 import { createRouletteAudio } from '@/lib/roulette-audio';
 export const promotionImageUrl = new URL(promoImage.url, 'https://screenshot-inspired-screen-maker.lovable.app').href;
 
+const FIT_CSS = `.promotion-page { position: fixed; inset: 0; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; overscroll-behavior: none; touch-action: manipulation; } .promotion-header { height: clamp(52px, 8dvh, 72px); flex-shrink: 0; padding-block: 6px; } .promotion-header img { width: clamp(34px, 5.5dvh, 48px); height: auto; } .promotion-intro, .promotion-wheel-page { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: stretch; padding: clamp(8px, 2dvh, 24px) 18px; overflow: hidden; } .promotion-intro .promotion-trophy { width: clamp(44px, 8dvh, 84px); height: clamp(44px, 8dvh, 84px); margin: 0 auto clamp(4px, 1.2dvh, 14px); flex-shrink: 0; } .promotion-intro .promotion-trophy svg { width: 55%; height: 55%; } .promotion-intro h1 { font-size: clamp(24px, 4.2dvh, 36px); margin: 0 0 clamp(4px, 1dvh, 12px); line-height: 1.1; } .promotion-approved { align-self: center; padding: clamp(5px, 1dvh, 10px) 16px; font-size: clamp(12px, 1.8dvh, 15px); margin-bottom: clamp(6px, 1.5dvh, 18px); } .promotion-intro > p:not(.promotion-fine) { font-size: clamp(13px, 2dvh, 17px); line-height: 1.4; margin: 0 0 clamp(6px, 1.4dvh, 16px); } .promotion-intro figure { margin: 0 0 clamp(8px, 1.6dvh, 18px); flex: 0 1 auto; min-height: 0; } .promotion-intro figure img { max-height: 24dvh; aspect-ratio: auto; } .promotion-intro figcaption { padding: 5px; } .mega-store .promotion-cta { min-height: clamp(46px, 7dvh, 58px); padding-block: 10px; flex-shrink: 0; } .promotion-fine { font-size: clamp(9px, 1.4dvh, 11px); line-height: 1.35; margin-top: clamp(6px, 1.2dvh, 14px); } .promotion-footer { padding: 6px 12px; font-size: 11px; flex-shrink: 0; } .promotion-wheel-page h1 { font-size: clamp(20px, 3.6dvh, 28px); margin: 4px 0; line-height: 1.15; } .promotion-attempt { font-size: clamp(13px, 2dvh, 16px); min-height: 0; margin: 0; } .promotion-wheel-page > .mx-auto { margin-bottom: 0; flex-shrink: 0; } .promotion-wheel-frame { width: min(400px, 100%, 46dvh); margin: clamp(6px, 1.5dvh, 20px) auto; flex-shrink: 0; } .promotion-wheel { will-change: transform; backface-visibility: hidden; } @media (max-height: 640px) { .promotion-intro figcaption, .promotion-footer { display: none; } .promotion-intro figure img { max-height: 20dvh; } .promotion-wheel-frame { width: min(400px, 100%, 42dvh); } }`;
+
 export function PromotionExperience({ returnTo }: { returnTo: string }) {
   const [view, setView] = useState<'intro' | 'wheel'>('intro');
   const [completed, setCompleted] = useState(0);
@@ -35,16 +37,16 @@ export function PromotionExperience({ returnTo }: { returnTo: string }) {
     lock.current = true; setBusy(true); setResult(null);
     const from = completed === 0 ? 0 : 1777.5;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const duration = reduced ? 150 : 4800;
+    const duration = reduced ? 150 : 2600;
     if (!sound.current) sound.current = createRouletteAudio();
     sound.current.setMuted(muted); sound.current.start(duration);
-    animation.current = element.animate([{ transform: `rotate(${from}deg)` }, { transform: `rotate(${outcome.rotation}deg)` }], { duration, easing: 'cubic-bezier(.12,.72,.12,1)', fill: 'forwards' });
+    animation.current = element.animate([{ transform: `rotate(${from}deg)` }, { transform: `rotate(${outcome.rotation}deg)` }], { duration, easing: 'cubic-bezier(.15,.8,.2,1)', fill: 'forwards' });
     try { await animation.current.finished; } catch { return; }
     try { sessionStorage.setItem(SPIN_KEY, String(outcome.attempt)); } catch { /* continue */ }
     sound.current?.finish(outcome.discount === 75);
     setCompleted(outcome.attempt); setResult(outcome.discount === 75 ? 'win' : 'retry'); setBusy(false); lock.current = false;
   }
-  return <div className="mega-store promotion-page">
+  return <div className="mega-store promotion-page"><style>{FIT_CSS}</style>
     <header className="promotion-header"><img src="/img/mega-capacetes-logo.webp" alt="Mega Capacetes" width="48" height="48" /><div><strong>MEGA CAPACETES</strong><span>BLACK FRIDAY 2026</span></div><ShieldCheck aria-label="Promoção da loja" /></header>
     {view === 'intro' ? <main className="promotion-intro">
       <div className="promotion-trophy"><Trophy size={52} /></div><h1>Parabéns!</h1><span className="promotion-approved"><Check size={20} /> Acesso à promoção liberado</span>
