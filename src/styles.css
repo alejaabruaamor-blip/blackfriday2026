@@ -489,3 +489,53 @@
 @keyframes store-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes store-drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @media (prefers-reduced-motion: reduce) { .mega-store *, .mega-store *::before, .mega-store *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* Store-only promotional entry. */
+.promotion-page { --promo-gold: oklch(.86 .18 90); --promo-green: oklch(.63 .16 160); --promo-pink: oklch(.58 .24 12); --promo-cyan: oklch(.64 .15 220); --promo-rim: oklch(.18 .01 260); --promo-surface: oklch(.97 .006 255); --promo-success-surface: oklch(.94 .04 155); --promo-modal-shadow: 0 20px 60px oklch(.1 0 0 / 22%); padding-top: 0; background: var(--promo-surface); }
+.promotion-header { height: 80px; background: var(--primary); color: var(--primary-foreground); display: flex; align-items: center; gap: 12px; padding: 12px max(20px, calc((100% - 720px) / 2)); }
+.promotion-header img { border-radius: 50%; object-fit: contain; background: var(--card); }
+.promotion-header strong { display: block; font-size: 18px; font-weight: 900; }
+.promotion-header span { display: block; font-size: 11px; font-weight: 700; }
+.promotion-header > svg { margin-left: auto; flex-shrink: 0; }
+.promotion-intro { max-width: 580px; margin: auto; padding: 28px 24px 16px; text-align: center; background: var(--card); }
+.promotion-trophy { width: 100px; height: 100px; border-radius: 50%; background: var(--promo-gold); color: var(--promo-rim); display: grid; place-items: center; margin: 0 auto 20px; }
+.promotion-intro h1 { font-size: 36px; margin: 0 0 14px; }
+.promotion-approved { display: inline-flex; gap: 9px; align-items: center; border-radius: 30px; padding: 12px 20px; background: var(--promo-success-surface); color: var(--store-success); font-size: 15px; font-weight: 800; margin-bottom: 22px; }
+.promotion-intro > p:not(.promotion-fine) { font-size: 18px; line-height: 1.65; color: var(--muted-foreground); margin: 0 0 24px; }
+.promotion-intro strong { color: var(--foreground); }
+.promotion-intro figure { margin: 0 0 26px; overflow: hidden; border-radius: 8px; border: 1px solid var(--border); }
+.promotion-intro figure img { width: 100%; height: auto; display: block; aspect-ratio: 1.6; object-fit: cover; }
+.promotion-intro figcaption { padding: 10px; font-weight: 700; font-size: 12px; }
+.mega-store .promotion-cta { width: 100%; min-height: 58px; height: auto; padding: 14px 16px; border-radius: 8px; font-size: 16px; font-weight: 900; white-space: normal; background: var(--primary); color: var(--primary-foreground); }
+.mega-store .promotion-cta svg { flex-shrink: 0; }
+.promotion-fine { font-size: 11px; color: var(--muted-foreground); line-height: 1.6; margin: 18px auto 0; max-width: 440px; }
+.promotion-footer { text-align: center; padding: 24px 16px; color: var(--muted-foreground); font-size: 12px; }
+.promotion-wheel-page { max-width: 560px; margin: auto; padding: 28px 24px; text-align: center; }
+.promotion-eyebrow { color: var(--primary); font-weight: 900; font-size: 12px; }
+.promotion-wheel-page h1 { font-size: 28px; margin: 12px 0; }
+.promotion-wheel-page h1 span { color: var(--primary); }
+.promotion-attempt { font-size: 16px; font-weight: 800; min-height: 26px; }
+.promotion-wheel-frame { width: min(400px, 100%); aspect-ratio: 1; margin: 26px auto; position: relative; }
+.promotion-wheel { width: 100%; height: 100%; display: block; transform-origin: 50% 50%; }
+.wheel-rim { fill: var(--promo-rim); }
+.wheel-sector { stroke: var(--promo-rim); stroke-width: 1; }
+.sector-0,.sector-4 { fill: var(--promo-rim); }
+.sector-1,.sector-7 { fill: var(--promo-cyan); }
+.sector-2,.sector-6 { fill: var(--promo-pink); }
+.sector-3 { fill: var(--promo-green); }
+.sector-5 { fill: var(--promo-gold); }
+.wheel-percent-label { fill: var(--primary-foreground); font: 900 32px Arial, sans-serif; }
+.sector-5 + g .wheel-percent-label { fill: var(--promo-rim); }
+.wheel-retry-label { fill: var(--primary-foreground); font: 700 15px Arial, sans-serif; }
+.wheel-light { fill: var(--promo-gold); }
+.promotion-pointer { position: absolute; top: -8px; left: calc(50% - 14px); border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 32px solid var(--promo-gold); z-index: 2; filter: drop-shadow(0 2px 1px var(--promo-rim)); }
+.mega-store .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 68px; height: 68px; border-radius: 50%; border: 5px solid var(--card); background: var(--promo-gold); color: var(--promo-rim); display: flex; flex-direction: column; gap: 0; padding: 0; font-size: 12px; font-weight: 900; }
+.mega-store .wheel-center:active { transform: translate(-50%, -50%); }
+.promotion-overlay { position: fixed; inset: 0; background: var(--store-overlay); display: grid; place-items: center; padding: 24px; z-index: 80; }
+.promotion-result { width: min(400px, 100%); padding: 30px 24px; background: var(--card); border-radius: 8px; text-align: center; box-shadow: var(--promo-modal-shadow); }
+.promotion-result h2 { font-size: 28px; margin-bottom: 12px; }
+.promotion-result p { font-size: 15px; line-height: 1.6; margin: 16px 0 24px; color: var(--muted-foreground); }
+.promotion-win { font-size: 48px; font-weight: 900; color: var(--primary); }
+.helmet-discount-note { font-size: 10px; color: var(--store-success); margin-top: 4px; }
+.product-promotion-badge { display: inline-block; padding: 5px 10px; background: var(--store-success); color: var(--primary-foreground); border-radius: 4px; font-size: 12px; font-weight: 800; margin-bottom: 12px; }
+@media (max-width: 600px) { .promotion-intro { padding: 24px 20px 16px; } .promotion-intro h1 { font-size: 32px; } .promotion-intro > p:not(.promotion-fine) { font-size: 16px; margin-bottom: 22px; } .promotion-header strong { font-size: 16px; } .promotion-wheel-page { padding-inline: 20px; } .promotion-wheel-page h1 { font-size: 26px; } .mega-store .promotion-cta { font-size: 14px; } }

@@ -21,7 +21,7 @@ function ProductDetails() {
   const cart = useStoreCart();
   const sizes = product.sizes ?? HELMET_SIZES;
   const helmet = isHelmet(product);
-  useEffect(() => { if (sizes.length === 1) setSize(sizes[0]!); }, [product.slug]);
+  useEffect(() => { if (sizes.length === 1) setSize(sizes[0] ?? ""); }, [product.slug]);
   useEffect(() => { ttTrack("ViewContent", product.priceCents, product.slug, product.name); }, [product.slug]);
   function addToCart() {
     if (!size) { setError(true); return; }
@@ -36,7 +36,7 @@ function ProductDetails() {
         <div className="product-details">
           {product.slug === "norisk-razor-black-edition" && <span className="product-featured-badge">MAIS VENDIDO</span>}
           <h1>{product.name}</h1>
-          <div className="product-pricing"><strong>{money(product.priceCents)}</strong><div className="product-pix-price"><span><BadgePercent size={18} /> Preço no Pix:</span><div><b>{money(product.pixCents)}</b><small>10% de desconto</small></div></div></div>
+          <div className="product-pricing">{helmet && <span className="product-promotion-badge">75% OFF · desconto já incluído</span>}<strong>{money(product.priceCents)}</strong><div className="product-pix-price"><span><BadgePercent size={18} /> Preço no Pix:</span><div><b>{money(product.pixCents)}</b><small>10% de desconto</small></div></div></div>
           <div className="product-purchase">
             <div className="product-size-panel" id="product-size-options"><div className="product-size-label"><span className="field-label">Escolha o tamanho</span><span>{helmet ? "Medida da cabeça em cm" : sizes.length === 1 ? "Tamanho único" : "Tamanho da peça"}</span></div><div className="size-options">{sizes.map(value => <Button key={value} variant="outline" aria-pressed={size === value} className={size === value ? "size-selected" : ""} onClick={() => { setSize(value); setError(false); }}>{value}</Button>)}</div>{error && <p role="alert" className="store-form-error">Selecione o tamanho.</p>}{helmet && <p>Passe a fita métrica ao redor da cabeça, cerca de 2 cm acima das sobrancelhas.</p>}</div>
             <div className="product-quantity"><span>Quantidade:</span><div><Button variant="ghost" size="icon" aria-label="Diminuir quantidade" disabled={quantity === 1} onClick={() => setQuantity(current => Math.max(1, current - 1))}><Minus /></Button><output aria-label="Quantidade">{quantity}</output><Button variant="ghost" size="icon" aria-label="Aumentar quantidade" onClick={() => setQuantity(current => current + 1)}><Plus /></Button></div></div>
