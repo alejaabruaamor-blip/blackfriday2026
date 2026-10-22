@@ -5,7 +5,7 @@ import { safeStoreReturn } from "@/lib/human-challenge";
 
 export const Route = createFileRoute("/verificacao")({
   validateSearch: (search: Record<string, unknown>) => ({ returnTo: safeStoreReturn(search.returnTo) }),
-  head: () => ({ meta: [
+  head: () => ({ links: [{ rel: "preload", as: "image", href: "/img/mega-logo-96.webp", fetchPriority: "high" }], meta: [
     { title: "Black Friday e Roleta de Ofertas — Mega Capacetes" },
     { name: "description", content: "Acesse a Black Friday Mega Capacetes e libere as ofertas de capacetes com 75% já incluídos nos preços." },
     { property: "og:title", content: "Black Friday e Roleta de Ofertas — Mega Capacetes" },
