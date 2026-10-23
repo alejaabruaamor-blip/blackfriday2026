@@ -2,6 +2,8 @@ export type ProductKind = "capacete" | "aberto" | "jaqueta" | "acessorio";
 export type Product = { name: string; image: string; priceCents: number; pixCents: number; slug: string; brand: string; kind?: ProductKind; sizes?: string[] };
 export const HELMET_SIZES = ["56", "57", "58", "59", "60"];
 export const isHelmet = (p: Product) => !p.kind || p.kind === "capacete" || p.kind === "aberto";
+export const PRODUCT_RATING = 5;
+export const productImages = (p: Product) => isHelmet(p) ? [p.image, `/img/galeria/${p.slug}-2.webp`, `/img/galeria/${p.slug}-3.webp`] : [p.image];
 const asset0 = { url: "/img/norisk-razor-black-edition.webp" };
 const asset1 = { url: "/img/norisk-darth-preto-fosco.webp" };
 const asset2 = { url: "/img/norisk-ff302-preto-fosco.webp" };

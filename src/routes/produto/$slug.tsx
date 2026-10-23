@@ -4,8 +4,8 @@ import { ttTrack } from "@/lib/tiktok";
 import { ShoppingBag, Truck, ShieldCheck, ChevronRight, Home, Plus, Minus, BadgePercent } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StoreLayout, useStoreCart } from "@/components/mega/StoreLayout";
-import { ProductCard } from "@/components/mega/ProductCard";
-import { products, money, HELMET_SIZES, isHelmet } from "@/lib/mega-store";
+import { ProductCard, ProductStars } from "@/components/mega/ProductCard";
+import { products, money, HELMET_SIZES, isHelmet, productImages } from "@/lib/mega-store";
 
 export const Route = createFileRoute("/produto/$slug")({
   loader: ({ params }) => { const product = products.find(p => p.slug === params.slug); if (!product) throw notFound(); return { product }; },
@@ -21,6 +21,8 @@ function ProductDetails() {
   const cart = useStoreCart();
   const sizes = product.sizes ?? HELMET_SIZES;
   const helmet = isHelmet(product);
+  const images = productImages(product);
+  const [activeImage, setActiveImage] = useState(0);
   useEffect(() => { if (sizes.length === 1) setSize(sizes[0] ?? ""); }, [product.slug]);
   useEffect(() => { ttTrack("ViewContent", product.priceCents, product.slug, product.name); }, [product.slug]);
   function addToCart() {
@@ -32,10 +34,11 @@ function ProductDetails() {
     <div className="product-breadcrumb-band"><div className="store-container store-breadcrumb"><Link to="/"><Home size={16} /> Loja</Link><ChevronRight size={12} /><span>{product.name}</span></div></div>
     <section className="store-container product-page">
       <div className="product-detail-grid">
-        <div className="product-gallery"><div className="product-main-image"><img src={product.image} alt={product.name} fetchPriority="high" /></div><div className="product-thumbnail" aria-hidden="true"><img src={product.image} alt="" /></div></div>
+        <div className="product-gallery"><div className="product-main-image"><img src={images[activeImage] ?? product.image} alt={product.name} fetchPriority="high" /></div><div className="product-thumbnails">{images.map((src, i) => <button key={src} type="button" className={i === activeImage ? "product-thumbnail product-thumbnail-active" : "product-thumbnail"} aria-label={`Ver foto ${i + 1} de ${images.length}`} aria-pressed={i === activeImage} onClick={() => setActiveImage(i)}><img src={src} alt="" loading="lazy" /></button>)}</div></div>
         <div className="product-details">
           {product.slug === "norisk-razor-black-edition" && <span className="product-featured-badge">MAIS VENDIDO</span>}
           <h1>{product.name}</h1>
+          <ProductStars />
           <div className="product-pricing">{helmet && <span className="product-promotion-badge">75% OFF · desconto já incluído</span>}<strong>{money(product.priceCents)}</strong><div className="product-pix-price"><span><BadgePercent size={18} /> Preço no Pix:</span><div><b>{money(product.pixCents)}</b><small>10% de desconto</small></div></div></div>
           <div className="product-purchase">
             <div className="product-size-panel" id="product-size-options"><div className="product-size-label"><span className="field-label">Escolha o tamanho</span><span>{helmet ? "Medida da cabeça em cm" : sizes.length === 1 ? "Tamanho único" : "Tamanho da peça"}</span></div><div className="size-options">{sizes.map(value => <Button key={value} variant="outline" aria-pressed={size === value} className={size === value ? "size-selected" : ""} onClick={() => { setSize(value); setError(false); }}>{value}</Button>)}</div>{error && <p role="alert" className="store-form-error">Selecione o tamanho.</p>}{helmet && <p>Passe a fita métrica ao redor da cabeça, cerca de 2 cm acima das sobrancelhas.</p>}</div>
